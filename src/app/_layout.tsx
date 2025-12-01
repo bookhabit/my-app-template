@@ -12,6 +12,7 @@ import { NetworkProvider } from '@/context/NetworkContext';
 import { ThemeProvider } from '@/context/ThemeProvider';
 import UpdateProvider from '@/context/UpdateProvider';
 
+import CustomSafeAreaView from '@/components/layout/CustomSafeAreaView';
 import { OfflineBanner } from '@/components/network/OfflineBanner';
 
 // 스플래시 스크린이 자동으로 숨겨지지 않도록 방지
@@ -72,8 +73,10 @@ export default function RootLayout() {
         <ThemeProvider>
           <NetworkProvider>
             <UpdateProvider>
-              <Slot />
-              <OfflineBanner />
+              <CustomSafeAreaView>
+                <Slot />
+                <OfflineBanner />
+              </CustomSafeAreaView>
             </UpdateProvider>
           </NetworkProvider>
         </ThemeProvider>
