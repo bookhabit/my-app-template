@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View, Platform, Alert } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Brightness from 'expo-brightness';
 
@@ -13,7 +12,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function BrightnessScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [brightness, setBrightness] = useState<number>(0.5);
@@ -230,7 +228,7 @@ export default function BrightnessScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Brightness" showBackButton />
       <View style={styles.content}>

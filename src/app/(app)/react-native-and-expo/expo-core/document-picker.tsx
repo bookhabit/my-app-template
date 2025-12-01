@@ -7,7 +7,6 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -20,7 +19,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function DocumentPickerScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [selectedFiles, setSelectedFiles] = useState<
@@ -93,7 +91,7 @@ export default function DocumentPickerScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="DocumentPicker" showBackButton />
       <View style={styles.content}>

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Switch, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -8,7 +7,6 @@ import TextBox from '@/components/common/TextBox';
 
 export default function SwitchScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [basicSwitch, setBasicSwitch] = useState(false);
   const [disabledSwitch, setDisabledSwitch] = useState(false);
   const [customSwitch, setCustomSwitch] = useState(false);
@@ -20,7 +18,7 @@ export default function SwitchScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={{ paddingBottom: bottom + 20 }}
+      contentContainerStyle={{ paddingBottom: 20 }}
     >
       <View style={styles.content}>
         <TextBox variant="title2" color={theme.text} style={styles.heading}>

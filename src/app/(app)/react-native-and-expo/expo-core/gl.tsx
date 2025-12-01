@@ -7,7 +7,6 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { GLView } from 'expo-gl';
 
@@ -19,7 +18,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function GLScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [msaaSamples, setMsaaSamples] = useState(4);
@@ -185,7 +183,7 @@ export default function GLScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="GLView" showBackButton />
       <View style={styles.content}>

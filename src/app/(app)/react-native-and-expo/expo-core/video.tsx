@@ -7,7 +7,6 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useEvent } from 'expo';
 import {
@@ -44,7 +43,6 @@ const sampleVideos: { name: string; source: VideoSource }[] = [
 
 export default function VideoScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [videoUrl, setVideoUrl] = useState(sampleVideos[0].source as string);
@@ -207,7 +205,7 @@ export default function VideoScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="Video" showBackButton />

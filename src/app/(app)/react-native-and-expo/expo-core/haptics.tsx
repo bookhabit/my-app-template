@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Haptics from 'expo-haptics';
 
@@ -12,7 +11,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function HapticsScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   const [lastTriggered, setLastTriggered] = useState<string>('');
 
@@ -28,7 +26,7 @@ export default function HapticsScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Haptics" showBackButton />
       <View style={styles.content}>

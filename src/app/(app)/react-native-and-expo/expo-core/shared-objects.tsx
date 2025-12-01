@@ -1,5 +1,4 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -8,12 +7,11 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function SharedObjectsScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="SharedObject / SharedRef" showBackButton />
       <View style={styles.content}>

@@ -7,7 +7,6 @@ import {
   Platform,
   Share,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as MediaLibrary from 'expo-media-library';
 
@@ -28,7 +27,6 @@ try {
 
 export default function ViewShotScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [captureFormat, setCaptureFormat] = useState<
@@ -101,7 +99,7 @@ export default function ViewShotScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="ViewShot" showBackButton />

@@ -7,7 +7,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -16,7 +15,6 @@ import { CustomButton } from '@/components/common/button';
 
 export default function StatusBarScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [barStyle, setBarStyle] = useState<
     'default' | 'light-content' | 'dark-content'
   >('default');
@@ -28,7 +26,7 @@ export default function StatusBarScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={{ paddingBottom: bottom + 20 }}
+      contentContainerStyle={{ paddingBottom: 20 }}
     >
       <StatusBar
         barStyle={barStyle}

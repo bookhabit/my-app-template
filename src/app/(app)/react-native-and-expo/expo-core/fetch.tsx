@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fetch } from 'expo/fetch';
 
@@ -12,7 +11,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function FetchScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
     bufferLength: number | null;
@@ -85,7 +83,7 @@ export default function FetchScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="expo/fetch" showBackButton />
       <View style={styles.content}>

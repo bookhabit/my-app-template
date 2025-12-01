@@ -7,7 +7,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -26,7 +25,6 @@ interface SectionData {
 
 export default function ScrollFlatSectionScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [selectedTab, setSelectedTab] = useState<'scroll' | 'flat' | 'section'>(
     'scroll'
   );
@@ -74,7 +72,7 @@ export default function ScrollFlatSectionScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={{ paddingBottom: bottom + 20 }}
+      contentContainerStyle={{ paddingBottom: 20 }}
     >
       <View style={styles.content}>
         <TextBox variant="title2" color={theme.text} style={styles.heading}>

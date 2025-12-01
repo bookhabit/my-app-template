@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { ScrollView, StyleSheet, View, Alert, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as ScreenOrientation from 'expo-screen-orientation';
 
@@ -12,7 +11,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function ScreenOrientationScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [currentOrientation, setCurrentOrientation] =
@@ -157,7 +155,7 @@ export default function ScreenOrientationScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="ScreenOrientation" showBackButton />

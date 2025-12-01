@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -8,7 +7,6 @@ import TextBox from '@/components/common/TextBox';
 
 export default function PressableScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [pressCount, setPressCount] = useState(0);
   const [longPressCount, setLongPressCount] = useState(0);
   const [pressInStatus, setPressInStatus] = useState<string>('');
@@ -18,7 +16,7 @@ export default function PressableScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={{ paddingBottom: bottom + 20 }}
+      contentContainerStyle={{ paddingBottom: 20 }}
     >
       <View style={styles.content}>
         <TextBox variant="title2" color={theme.text} style={styles.heading}>

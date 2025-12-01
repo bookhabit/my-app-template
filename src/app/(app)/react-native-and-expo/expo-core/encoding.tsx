@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -10,7 +9,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function EncodingScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [basicResult, setBasicResult] = useState<{
     encoded: number[] | null;
     decoded: string | null;
@@ -119,7 +117,7 @@ export default function EncodingScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="TextEncoder / TextDecoder" showBackButton />
       <View style={styles.content}>

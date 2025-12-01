@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View, Platform, Alert } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -22,7 +21,6 @@ try {
 
 export default function DateTimePickerScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [date, setDate] = useState(new Date());
@@ -78,7 +76,7 @@ export default function DateTimePickerScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="DateTimePicker" showBackButton />

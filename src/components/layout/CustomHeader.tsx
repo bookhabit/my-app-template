@@ -6,7 +6,6 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useRouter } from 'expo-router';
 
@@ -48,7 +47,6 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
   style,
 }) => {
   const { theme, isDarkMode } = useTheme();
-  const { top } = useSafeAreaInsets();
   const router = useRouter();
 
   const handleBackPress = () => {
@@ -64,8 +62,7 @@ export const CustomHeader: React.FC<CustomHeaderProps> = ({
       style={[
         styles.container,
         {
-          paddingTop: top,
-          backgroundColor: backgroundColor || theme.surface,
+          backgroundColor: backgroundColor || theme.background,
           borderBottomColor: theme.border,
         },
         style,

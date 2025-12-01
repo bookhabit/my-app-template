@@ -7,7 +7,6 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as SystemUI from 'expo-system-ui';
 
@@ -19,7 +18,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function SystemUIScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [backgroundColor, setBackgroundColor] = useState<string>('');
@@ -69,7 +67,7 @@ export default function SystemUIScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="SystemUI" showBackButton />

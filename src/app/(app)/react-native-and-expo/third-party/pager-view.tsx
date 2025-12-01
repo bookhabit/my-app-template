@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { ScrollView, StyleSheet, View, Dimensions } from 'react-native';
 import PagerView from 'react-native-pager-view';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -22,7 +21,6 @@ const pages = [
 
 export default function PagerViewScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [currentPage, setCurrentPage] = useState(0);
@@ -37,7 +35,7 @@ export default function PagerViewScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="PagerView" showBackButton />

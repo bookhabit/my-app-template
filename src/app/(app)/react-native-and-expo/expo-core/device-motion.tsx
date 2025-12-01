@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DeviceMotion, DeviceMotionOrientation } from 'expo-sensors';
 
@@ -12,7 +11,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function DeviceMotionScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
@@ -118,7 +116,7 @@ export default function DeviceMotionScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="DeviceMotion" showBackButton />
       <View style={styles.content}>

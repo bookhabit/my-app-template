@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, View, Alert, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { LightSensor } from 'expo-sensors';
 
@@ -12,7 +11,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function LightSensorScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [illuminance, setIlluminance] = useState(0);
@@ -165,7 +163,7 @@ export default function LightSensorScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="LightSensor" showBackButton />
       <View style={styles.content}>

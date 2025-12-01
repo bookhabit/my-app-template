@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useEvent, useEventListener } from 'expo';
 
@@ -94,7 +93,6 @@ function UseEventListenerExample({
 
 export default function EventHooksScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const eventEmitterRef = useRef(new SimpleEventEmitter());
   const [useEventStatus, setUseEventStatus] = useState('idle');
   const [eventListenerLogs, setEventListenerLogs] = useState<string[]>([]);
@@ -129,7 +127,7 @@ export default function EventHooksScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Event Hooks" showBackButton />
       <View style={styles.content}>

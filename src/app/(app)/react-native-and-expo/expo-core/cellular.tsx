@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Cellular from 'expo-cellular';
 
@@ -12,7 +11,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function CellularScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Permissions
   const [permission, requestPermission] = Cellular.usePermissions();
@@ -109,7 +107,7 @@ export default function CellularScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Cellular" showBackButton />
       <View style={styles.content}>

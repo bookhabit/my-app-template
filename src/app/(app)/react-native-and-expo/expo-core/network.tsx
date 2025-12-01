@@ -6,7 +6,6 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Network from 'expo-network';
 
@@ -18,7 +17,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function NetworkScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Network state from hook
   const networkState = Network.useNetworkState();
@@ -121,7 +119,7 @@ export default function NetworkScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="Network" showBackButton />

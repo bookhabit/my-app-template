@@ -7,7 +7,6 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as LocalAuthentication from 'expo-local-authentication';
 
@@ -19,7 +18,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function LocalAuthenticationScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [hasHardware, setHasHardware] = useState<boolean | null>(null);
@@ -183,7 +181,7 @@ export default function LocalAuthenticationScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="LocalAuthentication" showBackButton />
       <View style={styles.content}>

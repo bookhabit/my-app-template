@@ -1,5 +1,4 @@
 import { StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -7,13 +6,12 @@ import TextBox from '@/components/common/TextBox';
 
 export default function DynamicProgrammingScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: theme.background, paddingBottom: bottom },
+        { backgroundColor: theme.background, paddingBottom: 0 },
       ]}
     >
       <View style={styles.content}>

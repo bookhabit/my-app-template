@@ -7,7 +7,6 @@ import {
   Alert,
   Image,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { File, Directory, Paths } from 'expo-file-system';
 
@@ -19,7 +18,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function FileSystemScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [fileContent, setFileContent] = useState('');
@@ -234,7 +232,7 @@ export default function FileSystemScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="FileSystem" showBackButton />
       <View style={styles.content}>

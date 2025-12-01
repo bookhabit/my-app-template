@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Barometer, BarometerMeasurement } from 'expo-sensors';
 
@@ -12,7 +11,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function BarometerScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [data, setData] = useState<BarometerMeasurement>({
     pressure: 0,
     relativeAltitude: undefined,
@@ -124,7 +122,7 @@ export default function BarometerScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Barometer" showBackButton />
       <View style={styles.content}>

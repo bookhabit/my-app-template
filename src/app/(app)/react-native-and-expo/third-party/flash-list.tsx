@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 import { FlashList } from '@shopify/flash-list';
@@ -24,7 +23,6 @@ const generateData = (count: number): Item[] => {
 
 export default function FlashListScreen() {
   const { theme } = useTheme();
-  const { bottom, top } = useSafeAreaInsets();
 
   // State
   const [data, setData] = useState<Item[]>(generateData(1000));
@@ -72,7 +70,7 @@ export default function FlashListScreen() {
       ]}
     >
       <CustomHeader title="FlashList" showBackButton />
-      <View style={[styles.listContainer, { paddingBottom: bottom }]}>
+      <View style={[styles.listContainer, { paddingBottom: 0 }]}>
         <FlashList
           data={data}
           renderItem={renderItem}

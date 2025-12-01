@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, VirtualizedList, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -14,7 +13,6 @@ interface ListItem {
 
 export default function VirtualizedListScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const virtualizedListRef = useRef<VirtualizedList<ListItem>>(null);
   const [extraDataValue, setExtraDataValue] = useState(0);
   const [activeExample, setActiveExample] = useState<string | null>(null);
@@ -51,7 +49,7 @@ export default function VirtualizedListScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={[styles.content, { paddingBottom: bottom + 20 }]}>
+      <View style={[styles.content, { paddingBottom: 20 }]}>
         {/* VirtualizedList란? */}
         {/* <View style={[styles.section, { backgroundColor: theme.surface }]}>
           <TextBox

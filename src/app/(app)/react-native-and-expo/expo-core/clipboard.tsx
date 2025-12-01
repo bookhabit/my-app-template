@@ -8,7 +8,6 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Clipboard from 'expo-clipboard';
 
@@ -20,7 +19,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function ClipboardScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Text clipboard
   const [textInput, setTextInput] = useState('복사할 텍스트를 입력하세요');
@@ -237,7 +235,7 @@ export default function ClipboardScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Clipboard" showBackButton />
       <View style={styles.content}>

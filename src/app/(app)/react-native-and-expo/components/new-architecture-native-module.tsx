@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -14,7 +13,6 @@ const EMPTY = '<empty>';
 
 export default function NewArchitectureNativeModuleScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [value, setValue] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState<string>('');
 
@@ -61,7 +59,7 @@ export default function NewArchitectureNativeModuleScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={{ paddingBottom: bottom + 20 }}
+      contentContainerStyle={{ paddingBottom: 20 }}
     >
       <View style={styles.content}>
         <TextBox variant="title2" color={theme.text} style={styles.heading}>

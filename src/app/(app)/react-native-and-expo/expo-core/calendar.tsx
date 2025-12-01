@@ -8,7 +8,6 @@ import {
   TextInput,
   Linking,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Calendar from 'expo-calendar';
 
@@ -20,7 +19,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function CalendarScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
@@ -545,7 +543,7 @@ export default function CalendarScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Calendar" showBackButton />
       <View style={styles.content}>

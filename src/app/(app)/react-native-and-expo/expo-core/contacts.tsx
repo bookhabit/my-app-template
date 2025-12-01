@@ -9,7 +9,6 @@ import {
   Alert,
   Linking,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Contacts from 'expo-contacts';
 
@@ -21,7 +20,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function ContactsScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Permissions
   const [permission, setPermission] =
@@ -371,7 +369,7 @@ export default function ContactsScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Contacts" showBackButton />
       <View style={styles.content}>

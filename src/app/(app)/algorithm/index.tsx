@@ -1,5 +1,4 @@
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useRouter } from 'expo-router';
 
@@ -166,7 +165,6 @@ const algorithmTopics: AlgorithmTopic[] = [
 export default function AlgorithmScreen() {
   const { theme } = useTheme();
   const router = useRouter();
-  const { bottom } = useSafeAreaInsets();
 
   const handleCardPress = (route: string) => {
     router.push(route as any);
@@ -176,12 +174,12 @@ export default function AlgorithmScreen() {
     <View
       style={[
         styles.container,
-        { backgroundColor: theme.background, bottom: bottom },
+        { backgroundColor: theme.background, bottom: 0 },
       ]}
     >
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={{ paddingBottom: bottom }}
+        contentContainerStyle={{ paddingBottom: 0 }}
       >
         <View style={styles.content}>
           <TextBox variant="title2" color={theme.text} style={styles.heading}>

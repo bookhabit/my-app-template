@@ -8,7 +8,6 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
@@ -21,7 +20,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function ImageManipulatorScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [sourceUri, setSourceUri] = useState<string>('');
@@ -142,7 +140,7 @@ export default function ImageManipulatorScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="ImageManipulator" showBackButton />
       <View style={styles.content}>

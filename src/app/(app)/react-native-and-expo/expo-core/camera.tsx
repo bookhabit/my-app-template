@@ -7,7 +7,6 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   CameraView,
@@ -29,7 +28,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function CameraScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const cameraRef = useRef<CameraView>(null);
 
   // Permissions
@@ -224,7 +222,7 @@ export default function CameraScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Camera" showBackButton />
       <View style={styles.content}>

@@ -11,7 +11,6 @@ import {
   UIManager,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -30,7 +29,6 @@ if (
 
 export default function AnimatedScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // 1. Fade 애니메이션
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -344,7 +342,7 @@ export default function AnimatedScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={{ paddingBottom: bottom + 20 }}
+      contentContainerStyle={{ paddingBottom: 20 }}
     >
       <View style={styles.content}>
         <TextBox variant="title2" color={theme.text} style={styles.heading}>

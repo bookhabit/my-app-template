@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View, Alert, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -10,7 +9,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function ServerScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   const [testResult, setTestResult] = useState<string>('');
 
@@ -31,7 +29,7 @@ export default function ServerScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="Server" showBackButton />

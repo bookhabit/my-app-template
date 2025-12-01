@@ -7,7 +7,6 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as SecureStore from 'expo-secure-store';
 
@@ -19,7 +18,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function SecureStoreScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
@@ -160,7 +158,7 @@ export default function SecureStoreScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="SecureStore" showBackButton />

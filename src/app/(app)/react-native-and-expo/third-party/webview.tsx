@@ -7,7 +7,6 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -33,7 +32,6 @@ const sampleUrls = [
 
 export default function WebViewScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [url, setUrl] = useState('https://expo.dev');

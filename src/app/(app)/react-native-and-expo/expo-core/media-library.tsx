@@ -9,7 +9,6 @@ import {
   TextInput,
   FlatList,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as MediaLibrary from 'expo-media-library';
 
@@ -21,7 +20,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function MediaLibraryScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Permissions
   const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
@@ -321,7 +319,7 @@ export default function MediaLibraryScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="MediaLibrary" showBackButton />

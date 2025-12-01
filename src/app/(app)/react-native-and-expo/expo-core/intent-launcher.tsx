@@ -8,7 +8,6 @@ import {
   TextInput,
   Image,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as IntentLauncher from 'expo-intent-launcher';
 
@@ -116,7 +115,6 @@ const ACTIVITY_ACTIONS = {
 
 export default function IntentLauncherScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [loading, setLoading] = useState(false);
@@ -246,7 +244,7 @@ export default function IntentLauncherScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="IntentLauncher" showBackButton />
       <View style={styles.content}>

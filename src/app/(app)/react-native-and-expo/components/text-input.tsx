@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -9,7 +8,6 @@ import { CustomButton } from '@/components/common/button';
 
 export default function TextInputScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [text, setText] = useState('');
   const [password, setPassword] = useState('');
   const [multiline, setMultiline] = useState('');
@@ -26,7 +24,7 @@ export default function TextInputScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={{ paddingBottom: bottom + 20 }}
+      contentContainerStyle={{ paddingBottom: 20 }}
     >
       <View style={styles.content}>
         <TextBox variant="title2" color={theme.text} style={styles.heading}>

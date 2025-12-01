@@ -1,5 +1,4 @@
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useRouter } from 'expo-router';
 
@@ -112,7 +111,6 @@ const thirdPartyItems: ThirdPartyItem[] = [
 
 export default function ThirdPartyScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const router = useRouter();
 
   const handleItemPress = (route: string) => {
@@ -183,7 +181,7 @@ export default function ThirdPartyScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Third Party Libraries" showBackButton />
       <View style={styles.content}>

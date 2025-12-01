@@ -8,7 +8,6 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as ImagePicker from 'expo-image-picker';
 
@@ -20,7 +19,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function ImagePickerScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Permissions
   const [cameraPermission, requestCameraPermission] =
@@ -169,7 +167,7 @@ export default function ImagePickerScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="ImagePicker" showBackButton />
       <View style={styles.content}>

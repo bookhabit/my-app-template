@@ -9,10 +9,6 @@ export default function HomeScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <StatusBar
-        backgroundColor={theme.background}
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-      />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}

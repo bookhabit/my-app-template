@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, View, Alert, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Magnetometer } from 'expo-sensors';
 
@@ -12,7 +11,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function MagnetometerScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [magnetometerData, setMagnetometerData] = useState({
@@ -168,7 +166,7 @@ export default function MagnetometerScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Magnetometer" showBackButton />
       <View style={styles.content}>

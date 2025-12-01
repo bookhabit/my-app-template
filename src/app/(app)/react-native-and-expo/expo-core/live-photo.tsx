@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { ScrollView, StyleSheet, View, Alert, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as ImagePicker from 'expo-image-picker';
 import {
@@ -19,7 +18,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function LivePhotoScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   const viewRef = useRef<LivePhotoViewType>(null);
 
@@ -118,7 +116,7 @@ export default function LivePhotoScreen() {
     return (
       <ScrollView
         style={[styles.container, { backgroundColor: theme.background }]}
-        contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+        contentContainerStyle={[{ paddingBottom: 20 }]}
       >
         <CustomHeader title="LivePhoto" showBackButton />
         <View style={styles.content}>
@@ -153,7 +151,7 @@ export default function LivePhotoScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="LivePhoto" showBackButton />
       <View style={styles.content}>

@@ -6,7 +6,6 @@ import {
   TextInput,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SymbolView, SFSymbol } from 'expo-symbols';
 
@@ -33,7 +32,6 @@ const sampleSymbols: SFSymbol[] = [
 
 export default function SymbolsScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [symbolName, setSymbolName] = useState<SFSymbol>('house.fill');
@@ -146,7 +144,7 @@ export default function SymbolsScreen() {
         style={[styles.container, { backgroundColor: theme.background }]}
         contentContainerStyle={[
           styles.contentContainer,
-          { paddingBottom: bottom + 20 },
+          { paddingBottom: 20 },
         ]}
       >
         <CustomHeader title="Symbols" showBackButton />
@@ -178,7 +176,7 @@ export default function SymbolsScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="Symbols" showBackButton />

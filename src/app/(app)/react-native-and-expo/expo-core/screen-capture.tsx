@@ -7,7 +7,6 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as ScreenCapture from 'expo-screen-capture';
 
@@ -19,7 +18,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function ScreenCaptureScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Permissions
   const [permission, requestPermission] = ScreenCapture.usePermissions();
@@ -130,7 +128,7 @@ export default function ScreenCaptureScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="ScreenCapture" showBackButton />

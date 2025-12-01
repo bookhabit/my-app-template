@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Battery from 'expo-battery';
 import {
@@ -18,7 +17,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function BatteryScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Hooks
   const batteryLevel = useBatteryLevel();
@@ -180,7 +178,7 @@ export default function BatteryScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Battery" showBackButton />
       <View style={styles.content}>

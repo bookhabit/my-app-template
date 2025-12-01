@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -94,7 +93,6 @@ function merge(left, right) {
 
 export default function TimeSpaceScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [principlesVisible, setPrinciplesVisible] = useState(false);
   const [problemModalVisible, setProblemModalVisible] = useState(false);
 
@@ -118,7 +116,7 @@ export default function TimeSpaceScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={{ paddingBottom: bottom }}
+        contentContainerStyle={{ paddingBottom: 0 }}
       >
         <View style={styles.content}>
           <View style={[styles.section, { backgroundColor: theme.surface }]}>

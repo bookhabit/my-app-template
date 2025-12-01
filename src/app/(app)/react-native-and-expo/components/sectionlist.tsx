@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { SectionList, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 
@@ -14,7 +13,6 @@ interface SectionData {
 
 export default function SectionListScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const sectionListRef = useRef<SectionList>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [activeExample, setActiveExample] = useState<string | null>(null);
@@ -69,7 +67,7 @@ export default function SectionListScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={[styles.content, { paddingBottom: bottom + 20 }]}>
+      <View style={[styles.content, { paddingBottom: 20 }]}>
         {/* 예제 선택 버튼 (가로 스크롤) */}
         <View style={[styles.section, { backgroundColor: theme.surface }]}>
           <TextBox

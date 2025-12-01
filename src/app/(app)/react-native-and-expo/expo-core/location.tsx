@@ -8,7 +8,6 @@ import {
   TextInput,
   Linking,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
@@ -47,7 +46,6 @@ TaskManager.defineTask(GEOFENCING_TASK, async ({ data, error }) => {
 
 export default function LocationScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Permissions
   const [foregroundPermission, requestForegroundPermission] =
@@ -521,7 +519,7 @@ export default function LocationScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Location" showBackButton />
       <View style={styles.content}>

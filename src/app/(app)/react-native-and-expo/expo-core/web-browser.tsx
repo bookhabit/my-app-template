@@ -8,7 +8,6 @@ import {
   Platform,
   Linking,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as WebBrowser from 'expo-web-browser';
 
@@ -27,7 +26,6 @@ const sampleUrls = [
 
 export default function WebBrowserScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [url, setUrl] = useState('https://expo.dev');
@@ -183,7 +181,7 @@ export default function WebBrowserScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="WebBrowser" showBackButton />

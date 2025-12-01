@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View, Platform } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/context/ThemeProvider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -11,7 +10,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function SegmentedControlScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -27,7 +25,7 @@ export default function SegmentedControlScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="SegmentedControl" showBackButton />

@@ -6,7 +6,6 @@ import {
   AppState,
   AppStateStatus,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   getLocales,
@@ -27,7 +26,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function LocalizationScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Hook 사용
   const hookLocales = useLocales();
@@ -141,7 +139,7 @@ export default function LocalizationScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Localization" showBackButton />
       <View style={styles.content}>

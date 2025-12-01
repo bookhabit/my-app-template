@@ -7,7 +7,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
@@ -19,7 +18,6 @@ import { CustomButton } from '@/components/common/button';
 
 export default function LinkingScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const [initialURL, setInitialURL] = useState<string | null>(null);
   const [currentURL, setCurrentURL] = useState<string | null>(null);
   const [canOpenResult, setCanOpenResult] = useState<string>('');
@@ -107,7 +105,7 @@ export default function LinkingScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={{ paddingBottom: bottom + 20 }}
+      contentContainerStyle={{ paddingBottom: 20 }}
     >
       <View style={styles.content}>
         <TextBox variant="title2" color={theme.text} style={styles.heading}>

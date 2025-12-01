@@ -1,5 +1,4 @@
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useRouter } from 'expo-router';
 
@@ -187,7 +186,6 @@ const allComponents = [
 
 export default function ReactNativeComponentsScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
   const router = useRouter();
 
   const handleComponentPress = (component: ComponentItem) => {
@@ -253,7 +251,7 @@ export default function ReactNativeComponentsScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={{ paddingBottom: bottom + 20 }}
+      contentContainerStyle={{ paddingBottom: 20 }}
     >
       <CustomHeader title="React Native 컴포넌트" showBackButton />
       <View style={styles.content}>

@@ -7,7 +7,6 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   useKeepAwake,
@@ -76,7 +75,6 @@ function KeepAwakeHookExample() {
 
 export default function KeepAwakeScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
@@ -197,7 +195,7 @@ export default function KeepAwakeScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="KeepAwake" showBackButton />
       <View style={styles.content}>

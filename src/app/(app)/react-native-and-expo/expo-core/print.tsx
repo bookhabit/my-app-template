@@ -7,7 +7,6 @@ import {
   Alert,
   Platform,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -53,7 +52,6 @@ const DEFAULT_HTML = `
 
 export default function PrintScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [html, setHtml] = useState(DEFAULT_HTML);
@@ -195,7 +193,7 @@ export default function PrintScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="Print" showBackButton />

@@ -1,5 +1,4 @@
 import { View, StyleSheet, Pressable } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useRouter, useSegments, Slot } from 'expo-router';
 
@@ -11,7 +10,6 @@ export default function CustomTabsDemoLayout() {
   const { theme } = useTheme();
   const router = useRouter();
   const segments = useSegments();
-  const { bottom } = useSafeAreaInsets();
 
   const tabs = [
     { name: 'tab1', label: '홈', route: './tab1' },
@@ -34,7 +32,7 @@ export default function CustomTabsDemoLayout() {
           {
             backgroundColor: theme.surface,
             borderTopColor: theme.border,
-            paddingBottom: bottom,
+            paddingBottom: 0,
           },
         ]}
       >

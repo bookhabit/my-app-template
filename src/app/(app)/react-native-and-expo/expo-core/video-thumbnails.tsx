@@ -9,7 +9,6 @@ import {
   Image,
   FlatList,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
@@ -40,7 +39,6 @@ interface Thumbnail {
 
 export default function VideoThumbnailsScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // State
   const [videoUri, setVideoUri] = useState(sampleVideos[0].uri);
@@ -160,7 +158,7 @@ export default function VideoThumbnailsScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingBottom: bottom + 20 },
+        { paddingBottom: 20 },
       ]}
     >
       <CustomHeader title="Video Thumbnails" showBackButton />

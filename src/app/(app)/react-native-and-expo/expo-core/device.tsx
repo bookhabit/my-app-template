@@ -6,7 +6,6 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Device from 'expo-device';
 
@@ -18,7 +17,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 
 export default function DeviceScreen() {
   const { theme } = useTheme();
-  const { bottom } = useSafeAreaInsets();
 
   // Async state
   const [deviceType, setDeviceType] = useState<Device.DeviceType | null>(null);
@@ -123,7 +121,7 @@ export default function DeviceScreen() {
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={[{ paddingBottom: bottom + 20 }]}
+      contentContainerStyle={[{ paddingBottom: 20 }]}
     >
       <CustomHeader title="Device" showBackButton />
       <View style={styles.content}>

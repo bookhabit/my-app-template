@@ -7,7 +7,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useFocusEffect, useRouter } from 'expo-router';
 
@@ -30,7 +29,6 @@ const readingColors = {
 export default function ReadingListScreen() {
   const { theme, isDarkMode } = useTheme();
   const router = useRouter();
-  const { bottom } = useSafeAreaInsets();
   const [books, setBooks] = useState<Book[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
@@ -157,7 +155,7 @@ export default function ReadingListScreen() {
       <Pressable
         style={[
           styles.fab,
-          { backgroundColor: readingColors.primary, bottom: bottom + 20 },
+          { backgroundColor: readingColors.primary, bottom: 20 },
         ]}
         onPress={() => router.push('/(app)/reading/edit')}
       >

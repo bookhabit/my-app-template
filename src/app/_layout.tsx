@@ -13,6 +13,7 @@ import { NetworkProvider } from '@/context/NetworkContext';
 import { ThemeProvider } from '@/context/ThemeProvider';
 import UpdateProvider from '@/context/UpdateProvider';
 
+import CustomSafeAreaView from '@/components/layout/CustomSafeAreaView';
 import { OfflineBanner } from '@/components/network/OfflineBanner';
 
 import { BottomSheetProvider } from '@/hooks/useBottomSheet';
@@ -132,17 +133,19 @@ export default function RootLayout() {
             <UpdateProvider>
               <BottomSheetProvider>
                 <ModalProvider>
-                  <Stack screenOptions={{ headerShown: false }}>
-                    {/* 인증이 필요한 페이지 */}
-                    <Stack.Protected guard={isLoggedIn}>
-                      <Stack.Screen name="(app)" />
-                    </Stack.Protected>
+                  <CustomSafeAreaView>
+                    <Stack screenOptions={{ headerShown: false }}>
+                      {/* 인증이 필요한 페이지 */}
+                      <Stack.Protected guard={isLoggedIn}>
+                        <Stack.Screen name="(app)" />
+                      </Stack.Protected>
 
-                    {/* 인증이 필요 없는 페이지 */}
-                    <Stack.Protected guard={!isLoggedIn}>
-                      <Stack.Screen name="(auth)" />
-                    </Stack.Protected>
-                  </Stack>
+                      {/* 인증이 필요 없는 페이지 */}
+                      <Stack.Protected guard={!isLoggedIn}>
+                        <Stack.Screen name="(auth)" />
+                      </Stack.Protected>
+                    </Stack>
+                  </CustomSafeAreaView>
                   <OfflineBanner />
                 </ModalProvider>
               </BottomSheetProvider>
