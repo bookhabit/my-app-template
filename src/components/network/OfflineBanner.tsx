@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -19,6 +20,7 @@ import TextBox from '@/components/common/TextBox';
 export const OfflineBanner: React.FC = () => {
   const { theme } = useTheme();
   const { isConnected, isInternetReachable } = useNetwork();
+  const { top } = useSafeAreaInsets();
 
   const [slideAnim] = React.useState(new Animated.Value(-100));
 
@@ -47,7 +49,7 @@ export const OfflineBanner: React.FC = () => {
       style={[
         styles.container,
         {
-          paddingTop: 8,
+          paddingTop: top + 8,
           transform: [{ translateY: slideAnim }],
           backgroundColor: theme.warning,
         },
