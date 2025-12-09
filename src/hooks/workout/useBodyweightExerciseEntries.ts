@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import {
-  getWeekendHistory,
-  type WeekendExerciseType,
-} from '@/db/weekendWorkoutRepository';
+  getBodyweightHistory,
+  type BodyweightExerciseType,
+} from '@/db/bodyweightWorkoutRepository';
 
 import { BODYWEIGHT_EXERCISES } from '@/hooks/workout/useBodyweightWorkout';
 
@@ -12,7 +12,7 @@ const PAGE_SIZE = 30;
 export interface BodyweightExerciseHistory {
   id: string;
   date: string;
-  exerciseType: WeekendExerciseType;
+  exerciseType: BodyweightExerciseType;
   exerciseName: string;
   unitLabel: string;
   sets: {
@@ -20,11 +20,13 @@ export interface BodyweightExerciseHistory {
     durationSeconds: number | null;
     reps: number | null;
     floors: number | null;
+    distanceKm: number | null;
+    timeSeconds: number | null;
   }[];
 }
 
 export function useBodyweightExerciseEntries(
-  exerciseType: WeekendExerciseType | null
+  exerciseType: BodyweightExerciseType | null
 ) {
   const [entries, setEntries] = useState<BodyweightExerciseHistory[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,7 +50,7 @@ export function useBodyweightExerciseEntries(
         setLoading(true);
         setError(null);
 
-        const history = await getWeekendHistory(
+        const history = await getBodyweightHistory(
           exerciseType,
           PAGE_SIZE,
           pageNum * PAGE_SIZE
@@ -65,6 +67,8 @@ export function useBodyweightExerciseEntries(
             durationSeconds: set.durationSeconds,
             reps: set.reps,
             floors: set.floors,
+            distanceKm: set.distanceKm,
+            timeSeconds: set.timeSeconds,
           })),
         }));
 
@@ -121,4 +125,3 @@ export function useBodyweightExerciseEntries(
     },
   };
 }
-

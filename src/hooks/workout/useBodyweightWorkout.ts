@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
-  deleteWeekendExerciseEntries,
-  getWeekendEntriesByDate,
-  getLatestWeekendHistory,
-  getMaxWeekendValue,
-  replaceWeekendExerciseEntries,
-  type WeekendExerciseType,
-  type WeekendSetInput,
-} from '@/db/weekendWorkoutRepository';
+  deleteBodyweightExerciseEntries,
+  getBodyweightEntriesByDate,
+  getLatestBodyweightHistory,
+  getMaxBodyweightValue,
+  replaceBodyweightExerciseEntries,
+  type BodyweightExerciseType,
+  type BodyweightSetInput,
+} from '@/db/bodyweightWorkoutRepository';
 
 import { formatDate } from '@/utils/routine';
 
@@ -17,10 +17,12 @@ export interface BodyweightExerciseSet {
   durationSeconds?: number | null;
   reps?: number | null;
   floors?: number | null;
+  distanceKm?: number | null;
+  timeSeconds?: number | null;
 }
 
 export interface BodyweightExerciseState {
-  type: WeekendExerciseType;
+  type: BodyweightExerciseType;
   name: string;
   description: string;
   valueUnit: string;
@@ -35,7 +37,7 @@ export interface BodyweightExerciseState {
 }
 
 const BODYWEIGHT_EXERCISES_CONFIG: Record<
-  WeekendExerciseType,
+  BodyweightExerciseType,
   Omit<BodyweightExerciseState, 'type' | 'sets' | 'hasSavedData' | 'maxValue'>
 > = {
   hang: {
@@ -58,13 +60,19 @@ const BODYWEIGHT_EXERCISES_CONFIG: Record<
     description: '세트별로 오른 층수를 기록하세요',
     valueUnit: '층',
   },
+  running: {
+    name: '러닝',
+    description: '세트별로 거리(km)와 시간을 기록하세요',
+    valueUnit: 'km',
+  },
 };
 
-const ORDER: WeekendExerciseType[] = [
+const ORDER: BodyweightExerciseType[] = [
   'stairs',
   'pushup',
   'handstand_pushup',
   'hang',
+  'running',
 ];
 
 export function useBodyweightWorkout(targetDate: Date = new Date()) {
@@ -76,21 +84,26 @@ export function useBodyweightWorkout(targetDate: Date = new Date()) {
   const load = useCallback(async () => {
     try {
       setLoading(true);
-      const rows = await getWeekendEntriesByDate(formattedDate);
+      const rows = await getBodyweightEntriesByDate(formattedDate);
 
-      const grouped = new Map<WeekendExerciseType, BodyweightExerciseSet[]>();
+      const grouped = new Map<
+        BodyweightExerciseType,
+        BodyweightExerciseSet[]
+      >();
       for (const type of ORDER) {
         grouped.set(type, []);
       }
 
       rows.forEach((row) => {
-        const sets = grouped.get(row.exercise_type as WeekendExerciseType);
+        const sets = grouped.get(row.exercise_type as BodyweightExerciseType);
         if (!sets) return;
         sets.push({
           set: row.set_index,
           durationSeconds: row.duration_seconds,
           reps: row.reps,
           floors: row.floors,
+          distanceKm: row.distance_km,
+          timeSeconds: row.time_seconds,
         });
       });
 
@@ -100,8 +113,8 @@ export function useBodyweightWorkout(targetDate: Date = new Date()) {
           const sets = grouped.get(type)?.sort((a, b) => a.set - b.set) ?? [];
 
           const [latestHistory, maxValue] = await Promise.all([
-            getLatestWeekendHistory(type),
-            getMaxWeekendValue(type),
+            getLatestBodyweightHistory(type),
+            getMaxBodyweightValue(type),
           ]);
 
           return {
@@ -118,6 +131,8 @@ export function useBodyweightWorkout(targetDate: Date = new Date()) {
                     durationSeconds: set.durationSeconds,
                     reps: set.reps,
                     floors: set.floors,
+                    distanceKm: set.distanceKm,
+                    timeSeconds: set.timeSeconds,
                   })),
                 }
               : undefined,
@@ -140,9 +155,9 @@ export function useBodyweightWorkout(targetDate: Date = new Date()) {
   }, [load]);
 
   const saveExercise = useCallback(
-    async (type: WeekendExerciseType, sets: WeekendSetInput[]) => {
+    async (type: BodyweightExerciseType, sets: BodyweightSetInput[]) => {
       try {
-        await replaceWeekendExerciseEntries(formattedDate, type, sets);
+        await replaceBodyweightExerciseEntries(formattedDate, type, sets);
         await load();
         return true;
       } catch (err) {
@@ -155,9 +170,9 @@ export function useBodyweightWorkout(targetDate: Date = new Date()) {
   );
 
   const deleteExercise = useCallback(
-    async (type: WeekendExerciseType) => {
+    async (type: BodyweightExerciseType) => {
       try {
-        await deleteWeekendExerciseEntries(formattedDate, type);
+        await deleteBodyweightExerciseEntries(formattedDate, type);
         await load();
         return true;
       } catch (err) {

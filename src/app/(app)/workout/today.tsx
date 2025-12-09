@@ -13,7 +13,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { useTheme } from '@/context/ThemeProvider';
-import type { WeekendExerciseType } from '@/db/weekendWorkoutRepository';
+import type { BodyweightExerciseType } from '@/db/bodyweightWorkoutRepository';
 
 import TextBox from '@/components/common/TextBox';
 import CustomHeader from '@/components/layout/CustomHeader';
@@ -132,12 +132,14 @@ const TodayScreen = () => {
 
   // 맨몸 운동 저장 핸들러
   const handleBodyweightSave = async (
-    type: WeekendExerciseType,
+    type: BodyweightExerciseType,
     sets: {
       setIndex: number;
       durationSeconds?: number | null;
       reps?: number | null;
       floors?: number | null;
+      distanceKm?: number | null;
+      timeSeconds?: number | null;
     }[]
   ): Promise<boolean> => {
     try {
@@ -151,7 +153,7 @@ const TodayScreen = () => {
 
   // 맨몸 운동 삭제 핸들러
   const handleBodyweightDelete = async (
-    type: WeekendExerciseType
+    type: BodyweightExerciseType
   ): Promise<boolean> => {
     try {
       await deleteBodyweightExercise(type);

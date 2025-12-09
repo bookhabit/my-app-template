@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { useTheme } from '@/context/ThemeProvider';
-import type { WeekendExerciseType } from '@/db/weekendWorkoutRepository';
+import type { BodyweightExerciseType } from '@/db/bodyweightWorkoutRepository';
 
 import TextBox from '@/components/common/TextBox';
 import { CustomButton } from '@/components/common/button';
@@ -19,39 +19,44 @@ import type {
 interface BodyweightExerciseCardProps {
   exercise: BodyweightExerciseState;
   onSave: (
-    type: WeekendExerciseType,
+    type: BodyweightExerciseType,
     sets: {
       setIndex: number;
       durationSeconds?: number | null;
       reps?: number | null;
       floors?: number | null;
+      distanceKm?: number | null;
+      timeSeconds?: number | null;
     }[]
   ) => Promise<boolean>;
-  onDelete: (type: WeekendExerciseType) => Promise<boolean>;
+  onDelete: (type: BodyweightExerciseType) => Promise<boolean>;
 }
 
 interface SetInputState {
   setIndex: number;
   value: string;
+  timeValue?: string; // running일 때만 사용
 }
 
 const MAX_SETS = 10;
 
 const valueKeyMap: Record<
-  WeekendExerciseType,
-  'durationSeconds' | 'reps' | 'floors'
+  BodyweightExerciseType,
+  'durationSeconds' | 'reps' | 'floors' | 'distanceKm'
 > = {
   hang: 'durationSeconds',
   pushup: 'reps',
   handstand_pushup: 'reps',
   stairs: 'floors',
+  running: 'distanceKm',
 };
 
-const numericValidationMessage: Record<WeekendExerciseType, string> = {
+const numericValidationMessage: Record<BodyweightExerciseType, string> = {
   hang: '초 단위 숫자를 입력해주세요.',
   pushup: '횟수는 숫자로 입력해주세요.',
   handstand_pushup: '횟수는 숫자로 입력해주세요.',
   stairs: '층수는 숫자로 입력해주세요.',
+  running: '거리(km)를 입력해주세요.',
 };
 
 const BodyweightExerciseCard: React.FC<BodyweightExerciseCardProps> = ({
@@ -71,10 +76,20 @@ const BodyweightExerciseCard: React.FC<BodyweightExerciseCardProps> = ({
         exercise.sets.map((set) => ({
           setIndex: set.set,
           value: resolveValueString(exercise.type, set),
+          timeValue:
+            exercise.type === 'running' && set.timeSeconds
+              ? formatTimeFromSeconds(set.timeSeconds)
+              : '',
         }))
       );
     } else {
-      setSetInputs([{ setIndex: 1, value: '' }]);
+      setSetInputs([
+        {
+          setIndex: 1,
+          value: '',
+          timeValue: exercise.type === 'running' ? '' : undefined,
+        },
+      ]);
     }
   }, [exercise.sets, exercise.type]);
 
@@ -91,19 +106,40 @@ const BodyweightExerciseCard: React.FC<BodyweightExerciseCardProps> = ({
     );
   };
 
+  const handleTimeValueChange = (setIndex: number, timeValue: string) => {
+    setSetInputs((prev) =>
+      prev.map((item) =>
+        item.setIndex === setIndex ? { ...item, timeValue } : item
+      )
+    );
+  };
+
   const handleAddSet = () => {
     setSetInputs((prev) => {
       if (prev.length >= MAX_SETS) return prev;
       const nextIndex =
         prev.length > 0 ? prev[prev.length - 1].setIndex + 1 : 1;
-      return [...prev, { setIndex: nextIndex, value: '' }];
+      return [
+        ...prev,
+        {
+          setIndex: nextIndex,
+          value: '',
+          timeValue: exercise.type === 'running' ? '' : undefined,
+        },
+      ];
     });
   };
 
   const handleRemoveSet = (setIndex: number) => {
     setSetInputs((prev) => {
       if (prev.length <= 1) {
-        return [{ setIndex: 1, value: '' }];
+        return [
+          {
+            setIndex: 1,
+            value: '',
+            timeValue: exercise.type === 'running' ? '' : undefined,
+          },
+        ];
       }
       return prev.filter((item) => item.setIndex !== setIndex);
     });
@@ -111,18 +147,40 @@ const BodyweightExerciseCard: React.FC<BodyweightExerciseCardProps> = ({
 
   const handleSave = async () => {
     const valueKey = valueKeyMap[exercise.type];
+    const isRunning = exercise.type === 'running';
+
     const validSets = setInputs
       .map((input, idx) => {
-        const parsed = parseInt(input.value, 10);
-        if (isNaN(parsed) || parsed <= 0) {
-          return null;
+        if (isRunning) {
+          const distanceParsed = parseFloat(input.value);
+          if (isNaN(distanceParsed) || distanceParsed <= 0) {
+            return null;
+          }
+          const timeSeconds = input.timeValue
+            ? parseTimeToSeconds(input.timeValue)
+            : null;
+          return {
+            set: idx + 1,
+            distanceKm: distanceParsed,
+            timeSeconds,
+            durationSeconds: null,
+            reps: null,
+            floors: null,
+          };
+        } else {
+          const parsed = parseInt(input.value, 10);
+          if (isNaN(parsed) || parsed <= 0) {
+            return null;
+          }
+          return {
+            set: idx + 1,
+            durationSeconds: valueKey === 'durationSeconds' ? parsed : null,
+            reps: valueKey === 'reps' ? parsed : null,
+            floors: valueKey === 'floors' ? parsed : null,
+            distanceKm: null,
+            timeSeconds: null,
+          };
         }
-        return {
-          set: idx + 1,
-          durationSeconds: valueKey === 'durationSeconds' ? parsed : null,
-          reps: valueKey === 'reps' ? parsed : null,
-          floors: valueKey === 'floors' ? parsed : null,
-        };
       })
       .filter(Boolean) as BodyweightExerciseSet[];
 
@@ -140,6 +198,8 @@ const BodyweightExerciseCard: React.FC<BodyweightExerciseCardProps> = ({
           durationSeconds: set.durationSeconds ?? null,
           reps: set.reps ?? null,
           floors: set.floors ?? null,
+          distanceKm: set.distanceKm ?? null,
+          timeSeconds: set.timeSeconds ?? null,
         }))
       );
       Alert.alert('저장 완료', `${exercise.name} 기록이 저장되었습니다.`);
@@ -253,43 +313,87 @@ const BodyweightExerciseCard: React.FC<BodyweightExerciseCardProps> = ({
       {expanded && (
         <>
           <View style={styles.setContainer}>
-            {setInputs.map((setInput, index) => (
-              <View key={setInput.setIndex} style={styles.setRow}>
-                <TextBox variant="body3" color={theme.text}>
-                  {setInput.setIndex}세트
-                </TextBox>
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      borderColor: theme.border,
-                      color: theme.text,
-                      backgroundColor: theme.background,
-                    },
-                  ]}
-                  keyboardType="number-pad"
-                  value={setInput.value}
-                  placeholder={`값 입력 (${exercise.valueUnit})`}
-                  placeholderTextColor={theme.textSecondary}
-                  onChangeText={(value) =>
-                    handleValueChange(setInput.setIndex, value)
-                  }
-                />
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.setAction,
-                    pressed && { opacity: 0.7 },
-                  ]}
-                  onPress={() => handleRemoveSet(setInput.setIndex)}
-                >
-                  <MaterialIcons
-                    name="close"
-                    size={20}
-                    color={theme.textSecondary}
-                  />
-                </Pressable>
-              </View>
-            ))}
+            {setInputs.map((setInput, index) => {
+              const isRunning = exercise.type === 'running';
+              return (
+                <View key={setInput.setIndex} style={styles.setRow}>
+                  <TextBox variant="body3" color={theme.text}>
+                    {setInput.setIndex}세트
+                  </TextBox>
+                  {isRunning ? (
+                    <>
+                      <TextInput
+                        style={[
+                          styles.input,
+                          styles.runningInput,
+                          {
+                            borderColor: theme.border,
+                            color: theme.text,
+                            backgroundColor: theme.background,
+                          },
+                        ]}
+                        keyboardType="decimal-pad"
+                        value={setInput.value}
+                        placeholder="거리 (km)"
+                        placeholderTextColor={theme.textSecondary}
+                        onChangeText={(value) =>
+                          handleValueChange(setInput.setIndex, value)
+                        }
+                      />
+                      <TextInput
+                        style={[
+                          styles.input,
+                          styles.runningInput,
+                          {
+                            borderColor: theme.border,
+                            color: theme.text,
+                            backgroundColor: theme.background,
+                          },
+                        ]}
+                        keyboardType="number-pad"
+                        value={setInput.timeValue || ''}
+                        placeholder="시간 (분:초)"
+                        placeholderTextColor={theme.textSecondary}
+                        onChangeText={(value) =>
+                          handleTimeValueChange(setInput.setIndex, value)
+                        }
+                      />
+                    </>
+                  ) : (
+                    <TextInput
+                      style={[
+                        styles.input,
+                        {
+                          borderColor: theme.border,
+                          color: theme.text,
+                          backgroundColor: theme.background,
+                        },
+                      ]}
+                      keyboardType="number-pad"
+                      value={setInput.value}
+                      placeholder={`값 입력 (${exercise.valueUnit})`}
+                      placeholderTextColor={theme.textSecondary}
+                      onChangeText={(value) =>
+                        handleValueChange(setInput.setIndex, value)
+                      }
+                    />
+                  )}
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.setAction,
+                      pressed && { opacity: 0.7 },
+                    ]}
+                    onPress={() => handleRemoveSet(setInput.setIndex)}
+                  >
+                    <MaterialIcons
+                      name="close"
+                      size={20}
+                      color={theme.textSecondary}
+                    />
+                  </Pressable>
+                </View>
+              );
+            })}
 
             <Pressable
               style={({ pressed }) => [
@@ -330,22 +434,37 @@ const BodyweightExerciseCard: React.FC<BodyweightExerciseCardProps> = ({
                 마지막 기록: {exercise.latestHistory.date}
               </TextBox>
               <View style={styles.historySets}>
-                {exercise.latestHistory.sets.map((set) => (
-                  <TextBox
-                    key={set.set}
-                    variant="caption3"
-                    color={theme.textSecondary}
-                  >
-                    {set.set}세트:{' '}
-                    {resolveValueString(exercise.type, {
-                      set: set.set,
-                      durationSeconds: set.durationSeconds ?? undefined,
-                      reps: set.reps ?? undefined,
-                      floors: set.floors ?? undefined,
-                    })}
-                    {exercise.valueUnit}
-                  </TextBox>
-                ))}
+                {exercise.latestHistory.sets.map((set) => {
+                  const isRunning = exercise.type === 'running';
+                  if (isRunning) {
+                    return (
+                      <TextBox
+                        key={set.set}
+                        variant="caption3"
+                        color={theme.textSecondary}
+                      >
+                        {set.set}세트: {set.distanceKm ?? 0}km (
+                        {formatTimeFromSeconds(set.timeSeconds ?? 0)})
+                      </TextBox>
+                    );
+                  }
+                  return (
+                    <TextBox
+                      key={set.set}
+                      variant="caption3"
+                      color={theme.textSecondary}
+                    >
+                      {set.set}세트:{' '}
+                      {resolveValueString(exercise.type, {
+                        set: set.set,
+                        durationSeconds: set.durationSeconds ?? undefined,
+                        reps: set.reps ?? undefined,
+                        floors: set.floors ?? undefined,
+                      })}
+                      {exercise.valueUnit}
+                    </TextBox>
+                  );
+                })}
               </View>
             </View>
           ) : null}
@@ -358,7 +477,7 @@ const BodyweightExerciseCard: React.FC<BodyweightExerciseCardProps> = ({
 export default BodyweightExerciseCard;
 
 function resolveValueString(
-  type: WeekendExerciseType,
+  type: BodyweightExerciseType,
   set: BodyweightExerciseSet
 ) {
   if (type === 'hang') {
@@ -367,7 +486,39 @@ function resolveValueString(
   if (type === 'stairs') {
     return set.floors?.toString() ?? '';
   }
+  if (type === 'running') {
+    return set.distanceKm?.toString() ?? '';
+  }
   return set.reps?.toString() ?? '';
+}
+
+function formatTimeFromSeconds(seconds: number | null): string {
+  if (seconds === null || seconds === 0) return '0:00';
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${minutes}:${String(secs).padStart(2, '0')}`;
+}
+
+function parseTimeToSeconds(timeString: string): number | null {
+  if (!timeString || timeString.trim() === '') return null;
+
+  // "분:초" 형식 파싱
+  const parts = timeString.split(':');
+  if (parts.length === 2) {
+    const minutes = parseInt(parts[0], 10);
+    const seconds = parseInt(parts[1], 10);
+    if (!isNaN(minutes) && !isNaN(seconds)) {
+      return minutes * 60 + seconds;
+    }
+  }
+
+  // 숫자만 입력된 경우 분으로 간주
+  const minutes = parseInt(timeString, 10);
+  if (!isNaN(minutes)) {
+    return minutes * 60;
+  }
+
+  return null;
 }
 
 const styles = StyleSheet.create({
@@ -427,6 +578,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
+  },
+  runningInput: {
+    flex: 1,
   },
   setAction: {
     padding: 4,

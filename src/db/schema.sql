@@ -80,15 +80,17 @@ CREATE TABLE IF NOT EXISTS memo_entries (
   updated_at TEXT DEFAULT (datetime('now'))
 );
 
--- 주말 운동 기록 테이블
-CREATE TABLE IF NOT EXISTS weekend_workout_entries (
+-- 맨몸 운동 기록 테이블
+CREATE TABLE IF NOT EXISTS bodyweight_workout_entries (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   date TEXT NOT NULL,
-  exercise_type TEXT NOT NULL, -- hang, pushup, handstand_pushup, stairs
+  exercise_type TEXT NOT NULL, -- hang, pushup, handstand_pushup, stairs, running
   set_index INTEGER NOT NULL,
   duration_seconds INTEGER,
   reps INTEGER,
   floors INTEGER,
+  distance_km REAL,
+  time_seconds INTEGER,
   created_at TEXT DEFAULT (datetime('now')),
   updated_at TEXT DEFAULT (datetime('now')),
   UNIQUE(date, exercise_type, set_index)
@@ -102,5 +104,5 @@ CREATE INDEX IF NOT EXISTS idx_workout_entries_exercise ON workout_entries(exerc
 CREATE INDEX IF NOT EXISTS idx_workout_summaries_exercise ON workout_summaries(exercise_id);
 CREATE INDEX IF NOT EXISTS idx_workout_notes_date ON workout_notes(date);
 CREATE INDEX IF NOT EXISTS idx_memo_entries_created_at ON memo_entries(created_at);
-CREATE INDEX IF NOT EXISTS idx_weekend_workout_entries_date ON weekend_workout_entries(date);
-CREATE INDEX IF NOT EXISTS idx_weekend_workout_entries_type ON weekend_workout_entries(exercise_type);
+CREATE INDEX IF NOT EXISTS idx_bodyweight_workout_entries_date ON bodyweight_workout_entries(date);
+CREATE INDEX IF NOT EXISTS idx_bodyweight_workout_entries_type ON bodyweight_workout_entries(exercise_type);

@@ -114,8 +114,8 @@ async function executeSchema(db: SQLite.SQLiteDatabase): Promise<void> {
       updated_at TEXT DEFAULT (datetime('now'))
     );
 
-    -- 주말 운동 기록 테이블
-    CREATE TABLE IF NOT EXISTS weekend_workout_entries (
+    -- 맨몸 운동 기록 테이블
+    CREATE TABLE IF NOT EXISTS bodyweight_workout_entries (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       date TEXT NOT NULL,
       exercise_type TEXT NOT NULL,
@@ -123,6 +123,8 @@ async function executeSchema(db: SQLite.SQLiteDatabase): Promise<void> {
       duration_seconds INTEGER,
       reps INTEGER,
       floors INTEGER,
+      distance_km REAL,
+      time_seconds INTEGER,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now')),
       UNIQUE(date, exercise_type, set_index)
@@ -171,8 +173,8 @@ async function executeSchema(db: SQLite.SQLiteDatabase): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_workout_summaries_exercise ON workout_summaries(exercise_id);
     CREATE INDEX IF NOT EXISTS idx_workout_notes_date ON workout_notes(date);
     CREATE INDEX IF NOT EXISTS idx_memo_entries_created_at ON memo_entries(created_at);
-    CREATE INDEX IF NOT EXISTS idx_weekend_workout_entries_date ON weekend_workout_entries(date);
-    CREATE INDEX IF NOT EXISTS idx_weekend_workout_entries_type ON weekend_workout_entries(exercise_type);
+    CREATE INDEX IF NOT EXISTS idx_bodyweight_workout_entries_date ON bodyweight_workout_entries(date);
+    CREATE INDEX IF NOT EXISTS idx_bodyweight_workout_entries_type ON bodyweight_workout_entries(exercise_type);
     CREATE INDEX IF NOT EXISTS idx_reading_books_title ON reading_books(title);
     CREATE INDEX IF NOT EXISTS idx_reading_learned_points_book ON reading_learned_points(book_id);
     CREATE INDEX IF NOT EXISTS idx_study_goals_goal_id ON study_goals(goal_id);

@@ -379,7 +379,8 @@ class TimerService : Service() {
           if (remainingSeconds > 0) {
             handler.postDelayed(this, 1000)
           } else {
-            // 타이머 종료
+            // 타이머 종료 - 먼저 카운트다운 중지
+            stopTimerCountdown()
             isRunning = false
             isPaused = false
             updateNotification()

@@ -7,29 +7,35 @@ import { useTheme } from '@/context/ThemeProvider';
 
 import TextBox from '@/components/common/TextBox';
 
-export interface WeekendHistoryEntry {
+export interface BodyweightHistoryEntry {
   date: string;
   sets: {
     setIndex: number;
     durationSeconds: number | null;
     reps: number | null;
     floors: number | null;
+    distanceKm: number | null;
+    timeSeconds: number | null;
   }[];
   exerciseName: string;
   unitLabel: string;
 }
 
-interface WeekendEntryCardProps {
-  entry: WeekendHistoryEntry;
+interface BodyweightEntryCardProps {
+  entry: BodyweightHistoryEntry;
 }
 
-const WeekendEntryCard: React.FC<WeekendEntryCardProps> = ({ entry }) => {
+const BodyweightEntryCard: React.FC<BodyweightEntryCardProps> = ({ entry }) => {
   const { theme } = useTheme();
   const [expanded, setExpanded] = useState(false);
 
+  const isRunning = entry.exerciseName === '러닝';
+
   const totalValue = entry.sets.reduce((sum, set) => {
-    const value =
-      set.durationSeconds ?? set.reps ?? set.floors ?? 0;
+    if (isRunning) {
+      return sum + (set.distanceKm ?? 0);
+    }
+    const value = set.durationSeconds ?? set.reps ?? set.floors ?? 0;
     return sum + value;
   }, 0);
 
@@ -40,6 +46,13 @@ const WeekendEntryCard: React.FC<WeekendEntryCardProps> = ({ entry }) => {
       2,
       '0'
     )}-${String(date.getDate()).padStart(2, '0')} (${weekdays[date.getDay()]})`;
+  };
+
+  const formatTime = (seconds: number | null): string => {
+    if (seconds === null || seconds === 0) return '-';
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${String(secs).padStart(2, '0')}`;
   };
 
   return (
@@ -66,10 +79,16 @@ const WeekendEntryCard: React.FC<WeekendEntryCardProps> = ({ entry }) => {
             <TextBox variant="caption1" color={theme.textSecondary}>
               {entry.sets.length}세트
             </TextBox>
-            <TextBox variant="caption1" color={theme.textSecondary}>
-              합계 {totalValue}
-              {entry.unitLabel}
-            </TextBox>
+            {isRunning ? (
+              <TextBox variant="caption1" color={theme.textSecondary}>
+                총 {totalValue}km
+              </TextBox>
+            ) : (
+              <TextBox variant="caption1" color={theme.textSecondary}>
+                합계 {totalValue}
+                {entry.unitLabel}
+              </TextBox>
+            )}
           </View>
         </View>
         <MaterialIcons
@@ -89,8 +108,28 @@ const WeekendEntryCard: React.FC<WeekendEntryCardProps> = ({ entry }) => {
           ]}
         >
           {entry.sets.map((set) => {
-            const value =
-              set.durationSeconds ?? set.reps ?? set.floors ?? 0;
+            if (isRunning) {
+              return (
+                <View key={set.setIndex} style={styles.setRow}>
+                  <TextBox
+                    variant="caption1"
+                    color={theme.textSecondary}
+                    style={styles.setLabel}
+                  >
+                    {set.setIndex}세트
+                  </TextBox>
+                  <View style={styles.runningInfo}>
+                    <TextBox variant="caption1" color={theme.text}>
+                      {set.distanceKm ?? 0}km
+                    </TextBox>
+                    <TextBox variant="caption2" color={theme.textSecondary}>
+                      {formatTime(set.timeSeconds)}
+                    </TextBox>
+                  </View>
+                </View>
+              );
+            }
+            const value = set.durationSeconds ?? set.reps ?? set.floors ?? 0;
             return (
               <View key={set.setIndex} style={styles.setRow}>
                 <TextBox
@@ -113,7 +152,7 @@ const WeekendEntryCard: React.FC<WeekendEntryCardProps> = ({ entry }) => {
   );
 };
 
-export default WeekendEntryCard;
+export default BodyweightEntryCard;
 
 const styles = StyleSheet.create({
   card: {
@@ -153,9 +192,14 @@ const styles = StyleSheet.create({
   setRow: {
     flexDirection: 'row',
     gap: 12,
+    alignItems: 'center',
   },
   setLabel: {
     width: 60,
   },
+  runningInfo: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
 });
-

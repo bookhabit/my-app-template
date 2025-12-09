@@ -9,7 +9,7 @@ import SelectBox from '@/components/common/SelectBox';
 import TextBox from '@/components/common/TextBox';
 import CustomHeader from '@/components/layout/CustomHeader';
 import ExerciseEntryCard from '@/components/workout/ExerciseEntryCard';
-import WeekendEntryCard from '@/components/workout/WeekendEntryCard';
+import BodyweightEntryCard from '@/components/workout/BodyweightEntryCard';
 
 import { useBodyweightExerciseEntries } from '@/hooks/workout/useBodyweightExerciseEntries';
 import { BODYWEIGHT_EXERCISES } from '@/hooks/workout/useBodyweightWorkout';
@@ -40,7 +40,8 @@ const ExercisesScreen = () => {
         type === 'hang' ||
         type === 'pushup' ||
         type === 'handstand_pushup' ||
-        type === 'stairs'
+        type === 'stairs' ||
+        type === 'running'
       ) {
         setSelectedOption(`bodyweight:${type}`);
       }
@@ -63,14 +64,15 @@ const ExercisesScreen = () => {
     ? parseInt((selectedOption || '').split(':')[1], 10)
     : null;
 
-  const selectedWeekendType = useMemo(() => {
+  const selectedBodyweightType = useMemo(() => {
     if (selectedOption?.startsWith('bodyweight:')) {
       const type = selectedOption.split(':')[1];
       if (
         type === 'hang' ||
         type === 'pushup' ||
         type === 'handstand_pushup' ||
-        type === 'stairs'
+        type === 'stairs' ||
+        type === 'running'
       ) {
         return type;
       }
@@ -87,17 +89,17 @@ const ExercisesScreen = () => {
   } = useExerciseEntries(selectedExerciseId);
 
   const {
-    entries: weekendEntries,
-    loading: weekendEntriesLoading,
-    error: weekendError,
-    hasMore: weekendHasMore,
-    loadMore: weekendLoadMore,
-  } = useBodyweightExerciseEntries(selectedWeekendType);
+    entries: bodyweightEntries,
+    loading: bodyweightEntriesLoading,
+    error: bodyweightError,
+    hasMore: bodyweightHasMore,
+    loadMore: bodyweightLoadMore,
+  } = useBodyweightExerciseEntries(selectedBodyweightType);
 
   const handleLoadMore = () => {
-    if (selectedWeekendType) {
-      if (weekendHasMore && !weekendEntriesLoading) {
-        weekendLoadMore();
+    if (selectedBodyweightType) {
+      if (bodyweightHasMore && !bodyweightEntriesLoading) {
+        bodyweightLoadMore();
       }
     } else if (hasMore && !entriesLoading) {
       loadMore();
@@ -105,8 +107,8 @@ const ExercisesScreen = () => {
   };
 
   const renderFooter = () => {
-    const loadingState = selectedWeekendType
-      ? weekendEntriesLoading
+    const loadingState = selectedBodyweightType
+      ? bodyweightEntriesLoading
       : entriesLoading;
     if (!loadingState) return null;
     return (
@@ -116,11 +118,11 @@ const ExercisesScreen = () => {
     );
   };
 
-  const currentEntries = selectedWeekendType ? weekendEntries : entries;
-  const currentLoading = selectedWeekendType
-    ? weekendEntriesLoading
+  const currentEntries = selectedBodyweightType ? bodyweightEntries : entries;
+  const currentLoading = selectedBodyweightType
+    ? bodyweightEntriesLoading
     : entriesLoading;
-  const currentError = selectedWeekendType ? weekendError : error;
+  const currentError = selectedBodyweightType ? bodyweightError : error;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.workoutBg }]}>
@@ -170,11 +172,11 @@ const ExercisesScreen = () => {
                   기록이 없습니다
                 </TextBox>
               </View>
-            ) : selectedWeekendType ? (
+            ) : selectedBodyweightType ? (
               <FlatList
-                data={weekendEntries}
+                data={bodyweightEntries}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <WeekendEntryCard entry={item} />}
+                renderItem={({ item }) => <BodyweightEntryCard entry={item} />}
                 onEndReached={handleLoadMore}
                 onEndReachedThreshold={0.5}
                 ListFooterComponent={renderFooter}
