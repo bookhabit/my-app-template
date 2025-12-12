@@ -95,6 +95,13 @@ const studyTopics: StudyTopic[] = [
     icon: 'fitness-center',
     emoji: '💪',
   },
+  {
+    id: 'library-study',
+    title: '라이브러리 공부',
+    route: '/(app)/library-study',
+    icon: 'library-books',
+    emoji: '📚',
+  },
 ];
 
 export default function DetailScreen() {
