@@ -9,6 +9,7 @@ import * as Notifications from 'expo-notifications';
 import { Stack, Redirect } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
+import { AuthProvider, useAuthState } from '@/context/AuthContext';
 import { NetworkProvider } from '@/context/NetworkContext';
 import { ThemeProvider } from '@/context/ThemeProvider';
 import UpdateProvider from '@/context/UpdateProvider';
@@ -18,8 +19,6 @@ import { OfflineBanner } from '@/components/network/OfflineBanner';
 
 import { BottomSheetProvider } from '@/hooks/useBottomSheet';
 import { ModalProvider } from '@/hooks/useModal';
-
-import { useAuthState } from '@/utils/authState';
 
 // 스플래시 스크린이 자동으로 숨겨지지 않도록 방지
 SplashScreen.preventAutoHideAsync();
@@ -51,11 +50,68 @@ console.warn = (...args: any[]) => {
 };
 
 /**
+ * Root Layout Content
+ * - 인증 상태를 사용하는 내부 컴포넌트
+ */
+function RootLayoutContent() {
+  const { isLoggedIn, isLoading } = useAuthState();
+
+  // 인증 상태 로딩 중
+  if (isLoading) {
+    return (
+      <SafeAreaProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <ThemeProvider>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <ActivityIndicator size="large" />
+            </View>
+          </ThemeProvider>
+        </GestureHandlerRootView>
+      </SafeAreaProvider>
+    );
+  }
+
+  return (
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider>
+          <NetworkProvider>
+            <UpdateProvider>
+              <BottomSheetProvider>
+                <ModalProvider>
+                  <CustomSafeAreaView>
+                    <Stack screenOptions={{ headerShown: false }}>
+                      {/* 인증이 필요한 페이지 */}
+                      {isLoggedIn ? (
+                        <Stack.Screen name="(app)" />
+                      ) : (
+                        <Stack.Screen name="(auth)" />
+                      )}
+                    </Stack>
+                  </CustomSafeAreaView>
+                  <OfflineBanner />
+                </ModalProvider>
+              </BottomSheetProvider>
+            </UpdateProvider>
+          </NetworkProvider>
+        </ThemeProvider>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
+  );
+}
+
+/**
  * Root Layout
  *
  * - 폰트 로딩
+ * - AuthProvider로 전역 인증 상태 제공
  * - ThemeProvider로 전역 테마 제공
- * - Stack.Protected로 인증 기반 라우팅
  * - 인증 상태 변경 시 레이아웃 자동 재렌더링
  */
 export default function RootLayout() {
@@ -68,8 +124,6 @@ export default function RootLayout() {
     'Roboto-Light': require('@/assets/fonts/Roboto-Light.ttf'),
     BMJUA: require('@/assets/fonts/BMJUA_ttf.ttf'),
   });
-
-  const { isLoggedIn, isLoading } = useAuthState();
 
   // 알림 권한 요청 (Android 13+)
   useEffect(() => {
@@ -104,55 +158,9 @@ export default function RootLayout() {
     return null;
   }
 
-  // 인증 상태 로딩 중
-  if (isLoading) {
-    return (
-      <SafeAreaProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <ThemeProvider>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <ActivityIndicator size="large" />
-            </View>
-          </ThemeProvider>
-        </GestureHandlerRootView>
-      </SafeAreaProvider>
-    );
-  }
-
   return (
-    <SafeAreaProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <ThemeProvider>
-          <NetworkProvider>
-            <UpdateProvider>
-              <BottomSheetProvider>
-                <ModalProvider>
-                  <CustomSafeAreaView>
-                    <Stack screenOptions={{ headerShown: false }}>
-                      {/* 인증이 필요한 페이지 */}
-                      <Stack.Protected guard={isLoggedIn}>
-                        <Stack.Screen name="(app)" />
-                      </Stack.Protected>
-
-                      {/* 인증이 필요 없는 페이지 */}
-                      <Stack.Protected guard={!isLoggedIn}>
-                        <Stack.Screen name="(auth)" />
-                      </Stack.Protected>
-                    </Stack>
-                  </CustomSafeAreaView>
-                  <OfflineBanner />
-                </ModalProvider>
-              </BottomSheetProvider>
-            </UpdateProvider>
-          </NetworkProvider>
-        </ThemeProvider>
-      </GestureHandlerRootView>
-    </SafeAreaProvider>
+    <AuthProvider>
+      <RootLayoutContent />
+    </AuthProvider>
   );
 }

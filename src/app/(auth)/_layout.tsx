@@ -1,6 +1,6 @@
 import { Redirect, Stack } from 'expo-router';
 
-import { useAuthState } from '@/utils/authState';
+import { useAuthState } from '@/context/AuthContext';
 
 /**
  * Auth Layout

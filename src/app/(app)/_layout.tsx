@@ -1,11 +1,10 @@
 import { Redirect, Stack } from 'expo-router';
 
+import { useAuthState } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeProvider';
 
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { ErrorFallback } from '@/components/error/ErrorFallback';
-
-import { useAuthState } from '@/utils/authState';
 
 /**
  * App Layout (Protected Route)

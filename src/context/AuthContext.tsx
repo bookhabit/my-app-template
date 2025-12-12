@@ -1,4 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 
 import * as authApi from '@/api/auth';
 import { LoginRequest, RegisterRequest } from '@/api/types';
@@ -9,21 +15,39 @@ import {
   getRefreshToken,
 } from '@/storage/tokenStorage';
 
+interface AuthContextType {
+  isLoggedIn: boolean;
+  isLoading: boolean;
+  login: (credentials: LoginRequest) => Promise<any>;
+  register: (userData: RegisterRequest) => Promise<any>;
+  logout: () => Promise<void>;
+  refetch: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuthState = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuthState must be used within an AuthProvider');
+  }
+  return context;
+};
+
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
 /**
- * 인증 상태 관리 훅
+ * AuthProvider
  *
+ * - 전역 인증 상태 관리
  * - 토큰 존재 여부만 확인하여 라우팅 처리
- * - 로그인/회원가입 시 토큰만 저장
- * - 복잡한 서버 검증 로직 제거
+ * - 로그인/회원가입/로그아웃 시 즉시 상태 동기화
  */
-export function useAuthState() {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasToken, setHasToken] = useState<boolean>(false);
-
-  // 초기 토큰 존재 여부 확인
-  useEffect(() => {
-    checkTokenState();
-  }, [hasToken]);
 
   /**
    * 토큰 존재 여부 확인
@@ -41,6 +65,12 @@ export function useAuthState() {
     }
   }, []);
 
+  // 초기 토큰 존재 여부 확인 (한 번만 실행)
+  useEffect(() => {
+    checkTokenState();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /**
    * 로그인
    * - 토큰만 저장하면 자동으로 라우팅 처리됨
@@ -53,7 +83,7 @@ export function useAuthState() {
       // 토큰 저장
       await saveTokens(response.accessToken, response.refreshToken);
 
-      // 토큰 상태 업데이트
+      // 토큰 상태 즉시 업데이트
       setHasToken(true);
 
       return response;
@@ -76,7 +106,7 @@ export function useAuthState() {
       // 토큰 저장 (회원가입 시 자동 로그인)
       await saveTokens(response.accessToken, response.refreshToken);
 
-      // 토큰 상태 업데이트
+      // 토큰 상태 즉시 업데이트
       setHasToken(true);
 
       return response;
@@ -105,7 +135,7 @@ export function useAuthState() {
       // 토큰 삭제
       await clearTokens();
 
-      // 토큰 상태 업데이트
+      // 토큰 상태 즉시 업데이트
       setHasToken(false);
     } catch (error) {
       console.error('로그아웃 실패:', error);
@@ -115,12 +145,18 @@ export function useAuthState() {
     }
   }, []);
 
-  return {
-    isLoggedIn: hasToken, // 하위 호환성을 위해 유지
-    isLoading,
-    login,
-    register,
-    logout,
-    refetch: checkTokenState,
-  };
-}
+  return (
+    <AuthContext.Provider
+      value={{
+        isLoggedIn: hasToken,
+        isLoading,
+        login,
+        register,
+        logout,
+        refetch: checkTokenState,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
