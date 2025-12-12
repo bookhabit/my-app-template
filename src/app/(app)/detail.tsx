@@ -61,13 +61,6 @@ const studyTopics: StudyTopic[] = [
     emoji: '⚛️',
   },
   {
-    id: 'state-management',
-    title: '상태 관리',
-    route: '/(app)/state-management',
-    icon: 'storage',
-    emoji: '🗃️',
-  },
-  {
     id: 'animation',
     title: '애니메이션',
     route: '/(app)/animation',

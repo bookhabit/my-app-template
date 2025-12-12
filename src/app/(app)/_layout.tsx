@@ -121,15 +121,6 @@ export default function AppLayout() {
           }}
         />
         <Stack.Screen
-          name="state-management"
-          options={{
-            headerShown: false,
-            gestureEnabled: true,
-            fullScreenGestureEnabled: true,
-            presentation: 'card',
-          }}
-        />
-        <Stack.Screen
           name="animation"
           options={{
             headerShown: false,
