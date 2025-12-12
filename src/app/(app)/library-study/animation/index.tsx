@@ -9,82 +9,46 @@ import { useTheme } from '@/context/ThemeProvider';
 import TextBox from '@/components/common/TextBox';
 import CustomHeader from '@/components/layout/CustomHeader';
 
-/**
- * Library Study Screen
- *
- * - 카테고리별 카드 형식 UI
- * - 클릭 시 해당 카테고리 스크린으로 라우팅
- */
-
-interface Category {
+interface Library {
   id: string;
   title: string;
   route: string;
   icon: keyof typeof MaterialIcons.glyphMap;
   emoji: string;
-  description: string;
 }
 
-const categories: Category[] = [
+const libraries: Library[] = [
   {
-    id: 'state-management',
-    title: '전역 상태 관리',
-    route: '/(app)/library-study/state-management',
-    icon: 'storage',
-    emoji: '🔄',
-    description: 'Redux Toolkit, Zustand, Recoil 등',
-  },
-  {
-    id: 'form',
-    title: 'Form 상태 관리',
-    route: '/(app)/library-study/form',
-    icon: 'description',
-    emoji: '📝',
-    description: 'React Hook Form, Formik 등',
-  },
-  {
-    id: 'server-state',
-    title: '서버 상태 관리',
-    route: '/(app)/library-study/server-state',
-    icon: 'cloud-sync',
-    emoji: '🔄',
-    description: 'TanStack Query, SWR 등',
-  },
-  {
-    id: 'storage',
-    title: '로컬 저장소',
-    route: '/(app)/library-study/storage',
-    icon: 'save',
-    emoji: '💾',
-    description: 'AsyncStorage, MMKV, SQLite',
-  },
-  {
-    id: 'animation',
-    title: '애니메이션',
-    route: '/(app)/library-study/animation',
+    id: 'react-native-reanimated',
+    title: 'react-native-reanimated',
+    route: '/(app)/library-study/animation/react-native-reanimated',
     icon: 'animation',
     emoji: '✨',
-    description: 'Reanimated, Gesture Handler 등',
   },
   {
-    id: 'list',
-    title: '리스트 & 가상화',
-    route: '/(app)/library-study/list',
-    icon: 'list',
-    emoji: '📋',
-    description: 'FlatList, FlashList 등',
+    id: 'react-native-gesture-handler',
+    title: 'react-native-gesture-handler',
+    route: '/(app)/library-study/animation/react-native-gesture-handler',
+    icon: 'touch-app',
+    emoji: '👆',
   },
   {
-    id: 'media',
-    title: '이미지 / 미디어',
-    route: '/(app)/library-study/media',
-    icon: 'image',
-    emoji: '🖼️',
-    description: 'Fast Image 등',
+    id: 'react-native-skia',
+    title: 'React Native Skia',
+    route: '/(app)/library-study/animation/react-native-skia',
+    icon: 'brush',
+    emoji: '🎨',
+  },
+  {
+    id: 'lottie',
+    title: 'Lottie',
+    route: '/(app)/library-study/animation/lottie',
+    icon: 'movie',
+    emoji: '🎬',
   },
 ];
 
-export default function LibraryStudyScreen() {
+export default function AnimationScreen() {
   const { theme } = useTheme();
   const router = useRouter();
 
@@ -94,7 +58,7 @@ export default function LibraryStudyScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <CustomHeader title="라이브러리 공부" showBackButton />
+      <CustomHeader title="애니메이션" showBackButton />
 
       <ScrollView
         style={styles.scrollView}
@@ -102,20 +66,13 @@ export default function LibraryStudyScreen() {
       >
         <View style={styles.content}>
           <TextBox variant="title2" color={theme.text} style={styles.heading}>
-            카테고리를 선택하세요
-          </TextBox>
-          <TextBox
-            variant="body3"
-            color={theme.textSecondary}
-            style={styles.subtitle}
-          >
-            원하는 카테고리를 선택하여 라이브러리를 확인하세요
+            라이브러리를 선택하세요
           </TextBox>
 
           <View style={styles.cardGrid}>
-            {categories.map((category) => (
+            {libraries.map((library) => (
               <Pressable
-                key={category.id}
+                key={library.id}
                 style={({ pressed }) => [
                   styles.card,
                   {
@@ -124,7 +81,7 @@ export default function LibraryStudyScreen() {
                     opacity: pressed ? 0.7 : 1,
                   },
                 ]}
-                onPress={() => handleCardPress(category.route)}
+                onPress={() => handleCardPress(library.route)}
               >
                 <View style={styles.cardContent}>
                   <View style={styles.cardHeader}>
@@ -133,28 +90,22 @@ export default function LibraryStudyScreen() {
                       color={theme.text}
                       style={styles.cardEmoji}
                     >
-                      {category.emoji}
+                      {library.emoji}
                     </TextBox>
                     <MaterialIcons
-                      name={category.icon}
-                      size={28}
+                      name={library.icon}
+                      size={24}
                       color={theme.primary}
                       style={styles.cardIcon}
                     />
                   </View>
                   <TextBox
-                    variant="title3"
+                    variant="body3"
                     color={theme.text}
                     style={styles.cardTitle}
+                    numberOfLines={2}
                   >
-                    {category.title}
-                  </TextBox>
-                  <TextBox
-                    variant="caption2"
-                    color={theme.textSecondary}
-                    style={styles.cardDescription}
-                  >
-                    {category.description}
+                    {library.title}
                   </TextBox>
                 </View>
               </Pressable>
@@ -180,9 +131,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   heading: {
-    marginBottom: 8,
-  },
-  subtitle: {
     marginBottom: 24,
   },
   cardGrid: {
@@ -196,7 +144,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     padding: 20,
-    marginBottom: 0,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -211,20 +158,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   cardEmoji: {
-    fontSize: 36,
-    lineHeight: 36,
+    fontSize: 32,
+    lineHeight: 32,
   },
   cardIcon: {
     marginLeft: 'auto',
   },
   cardTitle: {
     fontWeight: '600',
-    marginBottom: 8,
-  },
-  cardDescription: {
-    lineHeight: 18,
   },
 });
+
