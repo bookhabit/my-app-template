@@ -1,21 +1,202 @@
-import { View, StyleSheet } from 'react-native';
+import { useState, useCallback, useMemo } from 'react';
+import { View, StyleSheet, Pressable, FlatList } from 'react-native';
+
+import { MaterialIcons } from '@expo/vector-icons';
 
 import { useTheme } from '@/context/ThemeProvider';
 
 import TextBox from '@/components/common/TextBox';
-import CustomHeader from '@/components/layout/CustomHeader';
 
+import { useTodoStore } from '@/stores/zustand/todoStore';
+
+import { TodoInputSection, TodoFilterSection } from './components';
+
+/**
+ * Zustand TodoList 화면
+ *
+ * Zustand의 주요 특징:
+ * 1. 간단한 API: create 함수 하나로 store 생성
+ * 2. 보일러플레이트 최소화: 액션 크리에이터 불필요
+ * 3. 직접 상태 수정: set 함수로 간단하게 상태 업데이트
+ * 4. Provider 불필요: 전역에서 바로 사용 가능
+ * 5. TypeScript 완벽 지원
+ * 6. 선택적 구독: 필요한 상태만 구독하여 성능 최적화
+ */
 export default function ZustandScreen() {
   const { theme } = useTheme();
+  const [inputText, setInputText] = useState('');
+
+  // Zustand store에서 상태와 액션 가져오기
+
+  const {
+    todos,
+    filter,
+    addTodo,
+    removeTodo,
+    toggleTodo,
+    clearCompleted,
+    setFilter,
+  } = useTodoStore();
+
+  // 필터링된 Todo 목록 (useMemo로 최적화)
+  const filteredTodos = useMemo(() => {
+    if (filter === 'active') return todos.filter((todo) => !todo.completed);
+    if (filter === 'completed') return todos.filter((todo) => todo.completed);
+    return todos;
+  }, [todos, filter]);
+
+  // 통계 계산 (useMemo로 최적화)
+  const activeCount = useMemo(
+    () => todos.filter((todo) => !todo.completed).length,
+    [todos]
+  );
+  const completedCount = useMemo(
+    () => todos.filter((todo) => todo.completed).length,
+    [todos]
+  );
+
+  // Todo 추가
+  const handleAddTodo = useCallback(() => {
+    if (inputText.trim()) {
+      addTodo(inputText.trim());
+      setInputText('');
+    }
+  }, [inputText, addTodo]);
+
+  // Todo 삭제
+  const handleRemoveTodo = useCallback(
+    (id: string) => {
+      removeTodo(id);
+    },
+    [removeTodo]
+  );
+
+  // Todo 완료 토글
+  const handleToggleTodo = useCallback(
+    (id: string) => {
+      toggleTodo(id);
+    },
+    [toggleTodo]
+  );
+
+  // 완료된 Todo 모두 삭제
+  const handleClearCompleted = useCallback(() => {
+    clearCompleted();
+  }, [clearCompleted]);
+
+  // 필터 변경
+  const handleSetFilter = useCallback(
+    (newFilter: 'all' | 'active' | 'completed') => {
+      setFilter(newFilter);
+    },
+    [setFilter]
+  );
+
+  // Todo 아이템 렌더링
+  const renderTodoItem = useCallback(
+    ({ item }: { item: (typeof todos)[0] }) => (
+      <View
+        style={[
+          styles.todoItem,
+          {
+            backgroundColor: theme.surface,
+            borderColor: theme.border,
+          },
+        ]}
+      >
+        <Pressable
+          style={styles.todoContent}
+          onPress={() => handleToggleTodo(item.id)}
+        >
+          <MaterialIcons
+            name={item.completed ? 'check-circle' : 'radio-button-unchecked'}
+            size={24}
+            color={item.completed ? theme.primary : theme.textSecondary}
+          />
+          <TextBox
+            variant="body2"
+            color={item.completed ? theme.textSecondary : theme.text}
+            style={[
+              styles.todoText,
+              item.completed && { textDecorationLine: 'line-through' },
+            ]}
+          >
+            {item.text}
+          </TextBox>
+        </Pressable>
+        <Pressable
+          onPress={() => handleRemoveTodo(item.id)}
+          style={styles.deleteButton}
+        >
+          <MaterialIcons name="delete" size={20} color={theme.error} />
+        </Pressable>
+      </View>
+    ),
+    [theme, handleToggleTodo, handleRemoveTodo]
+  );
+
+  // ListHeaderComponent: Todo 목록 제목만
+  const renderHeader = useCallback(
+    () => (
+      <View style={styles.section}>
+        <TextBox variant="title4" color={theme.text} style={styles.listTitle}>
+          Todo 목록 ({filteredTodos.length})
+        </TextBox>
+      </View>
+    ),
+    [filteredTodos.length, theme]
+  );
+
+  // ListEmptyComponent: 빈 상태
+  const renderEmpty = useCallback(
+    () => (
+      <View style={styles.emptyContainer}>
+        <MaterialIcons
+          name="check-circle-outline"
+          size={48}
+          color={theme.textSecondary}
+        />
+        <TextBox variant="body3" color={theme.textSecondary}>
+          {filter === 'active'
+            ? '진행중인 할 일이 없습니다'
+            : filter === 'completed'
+              ? '완료된 할 일이 없습니다'
+              : '할 일을 추가해보세요'}
+        </TextBox>
+      </View>
+    ),
+    [filter, theme]
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <CustomHeader title="Zustand" showBackButton />
-      <View style={styles.content}>
-        <TextBox variant="title2" color={theme.text}>
-          Zustand
-        </TextBox>
-      </View>
+      {/* Todo 입력 섹션 */}
+      <TodoInputSection
+        inputText={inputText}
+        onInputChange={setInputText}
+        onAddTodo={handleAddTodo}
+      />
+
+      {/* 필터 섹션 */}
+      <TodoFilterSection
+        filter={filter}
+        totalCount={todos.length}
+        activeCount={activeCount}
+        completedCount={completedCount}
+        onFilterChange={handleSetFilter}
+        onClearCompleted={handleClearCompleted}
+      />
+
+      <FlatList
+        data={filteredTodos}
+        renderItem={renderTodoItem}
+        keyExtractor={(item) => item.id}
+        ListHeaderComponent={renderHeader}
+        ListEmptyComponent={renderEmpty}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={true}
+      />
     </View>
   );
 }
@@ -23,9 +204,50 @@ export default function ZustandScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 20,
   },
-  content: {
+  listContent: {
+    paddingBottom: 20,
+  },
+  section: {
     padding: 20,
   },
+  sectionTitle: {
+    marginBottom: 12,
+  },
+  description: {
+    lineHeight: 24,
+  },
+  listTitle: {
+    marginBottom: 12,
+  },
+  todoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    margin: 12,
+  },
+  todoContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  todoText: {
+    flex: 1,
+  },
+  deleteButton: {
+    padding: 4,
+  },
+  separator: {
+    height: 8,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    gap: 12,
+  },
 });
-

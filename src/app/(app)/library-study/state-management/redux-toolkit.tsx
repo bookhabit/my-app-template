@@ -6,10 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import { useTheme } from '@/context/ThemeProvider';
 
-import { Input } from '@/components/common/Input';
 import TextBox from '@/components/common/TextBox';
-import { CustomButton } from '@/components/common/button';
-import CustomHeader from '@/components/layout/CustomHeader';
 
 import type { RootState } from '@/stores/redux-toolkit/store';
 import {
@@ -19,6 +16,8 @@ import {
   clearCompleted,
   setFilter,
 } from '@/stores/redux-toolkit/todoSlice';
+
+import { TodoInputSection, TodoFilterSection } from './components';
 
 /**
  * Redux Toolkit TodoList 화면
@@ -158,97 +157,22 @@ export default function ReduxToolkitScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <CustomHeader title="Redux Toolkit TodoList" showBackButton />
+      {/* Todo 입력 섹션 */}
+      <TodoInputSection
+        inputText={inputText}
+        onInputChange={setInputText}
+        onAddTodo={handleAddTodo}
+      />
 
-      {/* Todo 입력 섹션 - FlatList 밖으로 분리 */}
-      <View style={styles.section}>
-        <View style={styles.inputContainer}>
-          <Input
-            placeholder="할 일을 입력하세요..."
-            value={inputText}
-            onChangeText={setInputText}
-            onSubmitEditing={handleAddTodo}
-            returnKeyType="done"
-            style={styles.input}
-          />
-          <CustomButton
-            title="추가"
-            onPress={handleAddTodo}
-            variant="primary"
-            size="medium"
-          />
-        </View>
-      </View>
-
-      {/* 필터 섹션 - FlatList 밖으로 분리 */}
-      <View style={styles.section}>
-        <View style={styles.filterContainer}>
-          <Pressable
-            onPress={() => handleSetFilter('all')}
-            style={[
-              styles.filterButton,
-              {
-                backgroundColor:
-                  filter === 'all' ? theme.primary : theme.surface,
-                borderColor: theme.border,
-              },
-            ]}
-          >
-            <TextBox
-              variant="button4"
-              color={filter === 'all' ? '#FFFFFF' : theme.text}
-            >
-              전체 ({todos.length})
-            </TextBox>
-          </Pressable>
-          <Pressable
-            onPress={() => handleSetFilter('active')}
-            style={[
-              styles.filterButton,
-              {
-                backgroundColor:
-                  filter === 'active' ? theme.primary : theme.surface,
-                borderColor: theme.border,
-              },
-            ]}
-          >
-            <TextBox
-              variant="button4"
-              color={filter === 'active' ? '#FFFFFF' : theme.text}
-            >
-              진행중 ({activeCount})
-            </TextBox>
-          </Pressable>
-          <Pressable
-            onPress={() => handleSetFilter('completed')}
-            style={[
-              styles.filterButton,
-              {
-                backgroundColor:
-                  filter === 'completed' ? theme.primary : theme.surface,
-                borderColor: theme.border,
-              },
-            ]}
-          >
-            <TextBox
-              variant="button4"
-              color={filter === 'completed' ? '#FFFFFF' : theme.text}
-            >
-              완료 ({completedCount})
-            </TextBox>
-          </Pressable>
-        </View>
-
-        {completedCount > 0 && (
-          <CustomButton
-            title="완료된 항목 모두 삭제"
-            onPress={handleClearCompleted}
-            variant="outline"
-            size="small"
-            style={styles.clearButton}
-          />
-        )}
-      </View>
+      {/* 필터 섹션 */}
+      <TodoFilterSection
+        filter={filter}
+        totalCount={todos.length}
+        activeCount={activeCount}
+        completedCount={completedCount}
+        onFilterChange={handleSetFilter}
+        onClearCompleted={handleClearCompleted}
+      />
 
       <FlatList
         data={filteredTodos}
@@ -267,6 +191,7 @@ export default function ReduxToolkitScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 20,
   },
   listContent: {
     paddingBottom: 20,
@@ -279,32 +204,6 @@ const styles = StyleSheet.create({
   },
   description: {
     lineHeight: 24,
-  },
-  inputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  input: {
-    flex: 1,
-    minWidth: 0,
-  },
-  filterContainer: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 12,
-  },
-  filterButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    alignItems: 'center',
-  },
-  clearButton: {
-    alignSelf: 'flex-start',
   },
   listTitle: {
     marginBottom: 12,

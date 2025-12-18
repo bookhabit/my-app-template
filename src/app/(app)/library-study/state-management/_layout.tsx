@@ -1,14 +1,37 @@
-import { Stack } from 'expo-router';
 import { Provider } from 'react-redux';
 
+import { useSegments } from 'expo-router';
+import { Stack } from 'expo-router';
+
+import CustomHeader from '@/components/layout/CustomHeader';
+
 import { store } from '@/stores/redux-toolkit/store';
+
+// 라우트 이름 매핑
+const routeTitleMap: Record<string, string> = {
+  index: '전역 상태 관리',
+  'redux-toolkit': 'Redux Toolkit',
+  zustand: 'Zustand',
+  recoil: 'Recoil',
+  jotai: 'Jotai',
+  mobx: 'MobX',
+};
+
+// 헤더 컴포넌트
+function DynamicHeader() {
+  const segments = useSegments();
+  const currentRoute = segments[segments.length - 1] || 'index';
+  const title = routeTitleMap[currentRoute] || '전역 상태 관리';
+
+  return <CustomHeader title={title} showBackButton />;
+}
 
 export default function StateManagementLayout() {
   return (
     <Provider store={store}>
       <Stack
         screenOptions={{
-          headerShown: false,
+          header: () => <DynamicHeader />,
         }}
       >
         <Stack.Screen name="index" />

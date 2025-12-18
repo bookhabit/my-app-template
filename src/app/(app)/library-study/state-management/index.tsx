@@ -65,8 +65,6 @@ export default function StateManagementScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <CustomHeader title="전역 상태 관리" showBackButton />
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
