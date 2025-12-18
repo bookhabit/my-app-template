@@ -53,6 +53,13 @@ const libraries: Library[] = [
     icon: 'auto-awesome',
     emoji: '🎯',
   },
+  {
+    id: 'monitor',
+    title: 'Monitor',
+    route: '/(app)/library-study/state-management/monitor',
+    icon: 'monitor',
+    emoji: '🔍',
+  },
 ];
 
 export default function StateManagementScreen() {
