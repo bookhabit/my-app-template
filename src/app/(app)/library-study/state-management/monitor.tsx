@@ -11,6 +11,7 @@ import TextBox from '@/components/common/TextBox';
 import { todosAtom } from '@/stores/jotai/todoAtoms';
 import { todoStore } from '@/stores/mobx/todoStore';
 import type { RootState } from '@/stores/redux-toolkit/store';
+import { useExternalSyncTodoStore } from '@/stores/useSyncExternalStore/customStore';
 import { useTodoStore } from '@/stores/zustand/todoStore';
 
 /**
@@ -36,6 +37,9 @@ function MonitorScreen() {
 
   // 4. MobX: observer 내부에서 직접 접근
   const mobxTodos = todoStore.todos;
+
+  // 5. useSyncExternalStore: useExternalSyncTodoStore 상태 가져오기
+  const { todos: useSyncExternalStoreTodos } = useExternalSyncTodoStore();
 
   // 각 라이브러리별 섹션 렌더링
   const renderSection = (
@@ -127,6 +131,11 @@ function MonitorScreen() {
       {renderSection('2. Zustand', zustandTodos, '#443C68')}
       {renderSection('3. Jotai', jotaiTodos, '#4A5568')}
       {renderSection('4. MobX', mobxTodos, '#EA4C89')}
+      {renderSection(
+        '5. useSyncExternalStore',
+        useSyncExternalStoreTodos,
+        '#000000'
+      )}
     </ScrollView>
   );
 }

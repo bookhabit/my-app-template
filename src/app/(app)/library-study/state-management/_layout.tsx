@@ -15,6 +15,8 @@ const routeTitleMap: Record<string, string> = {
   recoil: 'Recoil',
   jotai: 'Jotai',
   mobx: 'MobX',
+  useSyncExternalStore: 'useSyncExternalStore',
+  monitor: 'Monitor',
 };
 
 // 헤더 컴포넌트
@@ -40,6 +42,8 @@ export default function StateManagementLayout() {
         <Stack.Screen name="recoil" />
         <Stack.Screen name="jotai" />
         <Stack.Screen name="mobx" />
+        <Stack.Screen name="useSyncExternalStore" />
+        <Stack.Screen name="monitor" />
       </Stack>
     </Provider>
   );

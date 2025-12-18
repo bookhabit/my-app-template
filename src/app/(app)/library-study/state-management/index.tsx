@@ -10,7 +10,14 @@ import TextBox from '@/components/common/TextBox';
 import CustomHeader from '@/components/layout/CustomHeader';
 
 interface Library {
-  id: 'redux-toolkit' | 'zustand' | 'recoil' | 'jotai' | 'mobx' | 'monitor';
+  id:
+    | 'redux-toolkit'
+    | 'zustand'
+    | 'recoil'
+    | 'jotai'
+    | 'mobx'
+    | 'useSyncExternalStore'
+    | 'monitor';
   title: string;
   route: string;
   icon: keyof typeof MaterialIcons.glyphMap;
@@ -52,6 +59,13 @@ const libraries: Library[] = [
     route: '/(app)/library-study/state-management/mobx',
     icon: 'auto-awesome',
     emoji: '🎯',
+  },
+  {
+    id: 'useSyncExternalStore',
+    title: 'useSyncExternalStore',
+    route: '/(app)/library-study/state-management/useSyncExternalStore',
+    icon: 'sync',
+    emoji: '🔗',
   },
   {
     id: 'monitor',
