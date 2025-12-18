@@ -10,7 +10,7 @@ import TextBox from '@/components/common/TextBox';
 import CustomHeader from '@/components/layout/CustomHeader';
 
 interface Library {
-  id: string;
+  id: 'redux-toolkit' | 'zustand' | 'recoil' | 'jotai' | 'mobx' | 'monitor';
   title: string;
   route: string;
   icon: keyof typeof MaterialIcons.glyphMap;
@@ -94,6 +94,7 @@ export default function StateManagementScreen() {
                   },
                 ]}
                 onPress={() => handleCardPress(library.route)}
+                disabled={library.id === 'recoil'}
               >
                 <View style={styles.cardContent}>
                   <View style={styles.cardHeader}>

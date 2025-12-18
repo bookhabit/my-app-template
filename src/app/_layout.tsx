@@ -13,6 +13,7 @@ import { AuthProvider, useAuthState } from '@/context/AuthContext';
 import { NetworkProvider } from '@/context/NetworkContext';
 import { ThemeProvider } from '@/context/ThemeProvider';
 import UpdateProvider from '@/context/UpdateProvider';
+import { RecoilRoot } from 'recoil';
 
 import CustomSafeAreaView from '@/components/layout/CustomSafeAreaView';
 import { OfflineBanner } from '@/components/network/OfflineBanner';
@@ -61,17 +62,19 @@ function RootLayoutContent() {
     return (
       <SafeAreaProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <ThemeProvider>
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <ActivityIndicator size="large" />
-            </View>
-          </ThemeProvider>
+          <RecoilRoot>
+            <ThemeProvider>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <ActivityIndicator size="large" />
+              </View>
+            </ThemeProvider>
+          </RecoilRoot>
         </GestureHandlerRootView>
       </SafeAreaProvider>
     );
@@ -80,27 +83,29 @@ function RootLayoutContent() {
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ThemeProvider>
-          <NetworkProvider>
-            <UpdateProvider>
-              <BottomSheetProvider>
-                <ModalProvider>
-                  <CustomSafeAreaView>
-                    <Stack screenOptions={{ headerShown: false }}>
-                      {/* 인증이 필요한 페이지 */}
-                      {isLoggedIn ? (
-                        <Stack.Screen name="(app)" />
-                      ) : (
-                        <Stack.Screen name="(auth)" />
-                      )}
-                    </Stack>
-                  </CustomSafeAreaView>
-                  <OfflineBanner />
-                </ModalProvider>
-              </BottomSheetProvider>
-            </UpdateProvider>
-          </NetworkProvider>
-        </ThemeProvider>
+        <RecoilRoot>
+          <ThemeProvider>
+            <NetworkProvider>
+              <UpdateProvider>
+                <BottomSheetProvider>
+                  <ModalProvider>
+                    <CustomSafeAreaView>
+                      <Stack screenOptions={{ headerShown: false }}>
+                        {/* 인증이 필요한 페이지 */}
+                        {isLoggedIn ? (
+                          <Stack.Screen name="(app)" />
+                        ) : (
+                          <Stack.Screen name="(auth)" />
+                        )}
+                      </Stack>
+                    </CustomSafeAreaView>
+                    <OfflineBanner />
+                  </ModalProvider>
+                </BottomSheetProvider>
+              </UpdateProvider>
+            </NetworkProvider>
+          </ThemeProvider>
+        </RecoilRoot>
       </GestureHandlerRootView>
     </SafeAreaProvider>
   );
