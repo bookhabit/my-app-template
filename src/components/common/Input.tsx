@@ -226,7 +226,7 @@ export const Input: React.FC<InputProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    flex: 1,
     gap: 6,
   },
   labelContainer: {
@@ -236,7 +236,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
   },
   input: {
     flex: 1,
