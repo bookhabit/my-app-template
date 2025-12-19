@@ -77,6 +77,11 @@ export default function HomeScreen() {
               route: '/(app)/today-study',
               color: '#FF6B6B',
             },
+            {
+              title: '아침루틴',
+              route: '/(app)/routine',
+              color: theme.accentBlue,
+            },
           ]}
         />
         <CustomButton

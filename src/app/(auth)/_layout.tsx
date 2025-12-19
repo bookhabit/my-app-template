@@ -18,7 +18,7 @@ export default function AuthLayout() {
 
   // 이미 로그인된 경우 메인 앱으로 리다이렉트
   if (isLoggedIn) {
-    return <Redirect href="/(app)/(tabs)/design" />;
+    return <Redirect href="/(app)/(tabs)" />;
   }
 
   return (

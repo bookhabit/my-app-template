@@ -72,7 +72,7 @@ export function ErrorFallback({ error, resetError }: ErrorFallbackProps) {
             ]}
             onPress={() => {
               resetError();
-              router.replace('/(app)/(tabs)/design');
+              router.replace('/(app)/(tabs)');
             }}
           >
             <TextBox variant="button2" color={theme.primary}>

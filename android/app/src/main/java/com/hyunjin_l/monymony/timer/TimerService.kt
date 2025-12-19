@@ -209,6 +209,11 @@ class TimerService : Service() {
   }
   
   private fun startAlarm() {
+    // 타이머가 종료된 상태가 아니면 진동하지 않음
+    if (isRunning || remainingSeconds > 0) {
+      return
+    }
+    
     // 이미 알람이 실행 중이면 중복 실행 방지
     if (isAlarming) {
       // 기존 알람이 있으면 먼저 정리
@@ -226,7 +231,7 @@ class TimerService : Service() {
     // 진동 패턴 정의
     val vibrationPattern = longArrayOf(0, 300, 500, 200, 500)
     
-    // 진동 시작
+    // 진동 시작 (타이머 종료 상태에서만)
     vibrator?.let { v ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val vibrationEffect = VibrationEffect.createWaveform(vibrationPattern, 0)
@@ -240,8 +245,8 @@ class TimerService : Service() {
     // 알림 반복 (진동 패턴 반복) - 확인 버튼을 누를 때까지 계속
     alarmRunnable = object : Runnable {
       override fun run() {
-        // isAlarming이 false가 되면 중지
-        if (!isAlarming) {
+        // isAlarming이 false가 되거나 타이머가 다시 시작되면 중지
+        if (!isAlarming || isRunning || remainingSeconds > 0) {
           alarmRunnable = null
           return
         }
@@ -452,6 +457,8 @@ class TimerService : Service() {
       .setOngoing(isRunning && !isPaused || isAlarming)
       .setPriority(if (isAlarming) NotificationCompat.PRIORITY_HIGH else NotificationCompat.PRIORITY_LOW)
       .setCategory(NotificationCompat.CATEGORY_SERVICE)
+      .setOnlyAlertOnce(!isAlarming) // 알람 상태가 아닐 때만 같은 알림을 업데이트 (카운트다운 중에는 새 알림으로 표시하지 않음)
+      .setSilent(!isAlarming) // 알람 상태가 아닐 때만 소리/진동 없음 (종료 시에만 알람)
     
     // 알림 중일 때 중지 버튼 추가
     if (isAlarming) {
@@ -498,6 +505,7 @@ class TimerService : Service() {
   private fun updateNotification() {
     val notification = createNotification()
     val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    // 같은 NOTIFICATION_ID를 사용하여 기존 알림을 업데이트 (새 알림으로 표시되지 않음)
     notificationManager.notify(NOTIFICATION_ID, notification)
   }
   
