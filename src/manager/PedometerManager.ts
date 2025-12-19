@@ -518,8 +518,5 @@ class PedometerManager {
   }
 }
 
-// 싱글톤 인스턴스 생성 및 내보내기
-const pedometerManager = new PedometerManager();
-
 export default PedometerManager;
 export type { StepData, StepUpdateData };

@@ -8,11 +8,13 @@ import android.app.Service
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.app.ServiceCompat
@@ -20,6 +22,7 @@ import android.app.ForegroundServiceStartNotAllowedException
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import com.hyunjin_l.monymony.MainActivity
+import com.hyunjin_l.monymony.R
 import com.hyunjin_l.monymony.pedometer.StepCounterManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -508,8 +511,43 @@ class PedometerService : Service() {
                 or PendingIntent.FLAG_IMMUTABLE
         )
         
-        // 기본 알림 생성 (리소스 파일이 없으므로 기본 알림 사용)
-        return createDefaultNotification(title, pendingIntent, earnButtonPendingIntent)
+        // RemoteViews 생성 시도 (예외 처리)
+        return try {
+            // RemoteViews 생성
+            val remoteViews = RemoteViews(packageName, R.layout.notification_pedometer)
+            
+            // title에서 숫자와 "걸음" 분리 (예: "1,234 걸음" -> "1,234"와 "걸음")
+            val numberText = title.replace(" 걸음", "").trim()
+            
+            // RemoteViews에 데이터 설정
+            remoteViews.setTextViewText(R.id.notification_steps_number, numberText)
+            remoteViews.setTextViewText(R.id.notification_steps_text, "걸음")
+            
+            // 커스텀 RemoteViews를 사용한 알림 생성
+            NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentIntent(pendingIntent)
+                .setCustomContentView(remoteViews) // 접힌 상태 (기본 영역)
+                .setCustomBigContentView(remoteViews) // 확장 상태 (드래그 시)
+                .setOngoing(true) // 사용자가 스와이프로 제거할 수 없음
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setAutoCancel(false)
+                .setShowWhen(false) // 시간 표시 제거
+                .build()
+        } catch (e: Resources.NotFoundException) {
+            // 리소스를 찾을 수 없는 경우 기본 알림으로 대체
+            Log.e("PedometerService", "❌ RemoteViews 리소스를 찾을 수 없음: ${e.message}", e)
+            createDefaultNotification(title, pendingIntent, earnButtonPendingIntent)
+        } catch (e: RemoteViews.ActionException) {
+            // RemoteViews 액션 예외 처리
+            Log.e("PedometerService", "❌ RemoteViews 액션 예외: ${e.message}", e)
+            createDefaultNotification(title, pendingIntent, earnButtonPendingIntent)
+        } catch (e: Exception) {
+            // 기타 예외 처리
+            Log.e("PedometerService", "❌ RemoteViews 생성 실패: ${e.message}", e)
+            createDefaultNotification(title, pendingIntent, earnButtonPendingIntent)
+        }
     }
     
     /**

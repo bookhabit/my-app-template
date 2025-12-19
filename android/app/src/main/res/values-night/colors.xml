@@ -1,1 +1,5 @@
-<resources/>
+<resources>
+  <!-- 알림 걸음수 색상 (다크모드) -->
+  <color name="notification_steps_number">#ffffff</color>
+  <color name="notification_steps_text">#cccccc</color>
+</resources>

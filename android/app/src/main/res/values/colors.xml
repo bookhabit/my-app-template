@@ -3,4 +3,7 @@
   <color name="iconBackground">#ffffff</color>
   <color name="colorPrimary">#023c69</color>
   <color name="colorPrimaryDark">#ffffff</color>
+  <!-- 알림 걸음수 색상 -->
+  <color name="notification_steps_number">#000000</color>
+  <color name="notification_steps_text">#666666</color>
 </resources>

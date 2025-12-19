@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Alert,
-  Platform,
-  NativeModules,
-} from 'react-native';
+import { View, ScrollView, StyleSheet, Alert, Platform } from 'react-native';
 
 import { useRouter } from 'expo-router';
 
@@ -17,7 +10,7 @@ import TextBox from '@/components/common/TextBox';
 import { CustomButton } from '@/components/common/button';
 import CustomHeader from '@/components/layout/CustomHeader';
 
-const { AOSPedometerModule } = NativeModules;
+import ForegroundServiceUtils from '@/utils/foregroundServiceUtils';
 
 const MorningRoutineScreen = () => {
   const router = useRouter();
@@ -67,6 +60,8 @@ const MorningRoutineScreen = () => {
       if (result.granted) {
         Alert.alert('성공', '권한이 허용되었습니다.');
         await checkPermission();
+        // 권한이 허용되면 자동 시작
+        await autoStart();
       } else {
         Alert.alert('권한 필요', result.message);
       }
@@ -146,9 +141,9 @@ const MorningRoutineScreen = () => {
       );
 
       // Android의 경우 서비스 시작
-      if (Platform.OS === 'android' && AOSPedometerModule) {
+      if (Platform.OS === 'android') {
         try {
-          await AOSPedometerModule.startStepCounterService();
+          await ForegroundServiceUtils.startService();
           console.log('Foreground Service 시작됨');
         } catch (error: any) {
           console.error('서비스 시작 실패:', error);
@@ -178,9 +173,9 @@ const MorningRoutineScreen = () => {
       );
 
       // Android의 경우 서비스 중지
-      if (Platform.OS === 'android' && AOSPedometerModule) {
+      if (Platform.OS === 'android') {
         try {
-          await AOSPedometerModule.stopStepCounterService();
+          await ForegroundServiceUtils.stopService();
           console.log('Foreground Service 중지됨');
         } catch (error: any) {
           console.error('서비스 중지 실패:', error);
@@ -199,19 +194,70 @@ const MorningRoutineScreen = () => {
 
   // 서비스 상태 확인 (Android 전용)
   const checkServiceStatus = async () => {
-    if (Platform.OS !== 'android' || !AOSPedometerModule) {
+    if (Platform.OS !== 'android') {
       return;
     }
 
     try {
-      const status = await AOSPedometerModule.getServiceStatus();
-      setServiceStatus({
-        isServiceRunning: status.isServiceRunning,
-        totalSteps: status.totalSteps,
-      });
-      console.log('서비스 상태:', status);
+      const status = await ForegroundServiceUtils.getServiceStatus();
+      if (status) {
+        setServiceStatus({
+          isServiceRunning: status.isServiceRunning,
+          totalSteps: status.totalSteps,
+        });
+        console.log('서비스 상태:', status);
+      }
     } catch (error: any) {
       console.error('서비스 상태 확인 실패:', error);
+    }
+  };
+
+  // 자동 시작 함수
+  const autoStart = async () => {
+    try {
+      // 1. 만보기 권한 확인
+      const permissionStatus = await pedometerManager.checkPermissionStatus();
+      setPermissionStatus(permissionStatus);
+
+      if (!permissionStatus.hasPermission) {
+        console.log('⚠️ 만보기 권한이 없어서 자동 시작하지 않습니다.');
+        return;
+      }
+
+      console.log('✅ 만보기 권한 확인됨 - 자동 시작');
+
+      // 2. 오늘 걸음수 로드
+      try {
+        const result = await pedometerManager.loadTodaySteps();
+        setTodaySteps(result.totalSteps);
+        console.log('📊 초기 걸음수 로드:', result.totalSteps);
+      } catch (error: any) {
+        console.error('초기 걸음수 로드 실패:', error);
+      }
+
+      // 3. 실시간 업데이트 시작
+      try {
+        await pedometerManager.startUpdates();
+        setIsUpdating(true);
+        console.log('🔄 실시간 업데이트 자동 시작');
+      } catch (error: any) {
+        console.error('실시간 업데이트 자동 시작 실패:', error);
+      }
+
+      // 4. Android의 경우 포그라운드 서비스 시작
+      if (Platform.OS === 'android') {
+        try {
+          await ForegroundServiceUtils.startService();
+          console.log('🚀 Foreground Service 자동 시작');
+        } catch (error: any) {
+          console.error('Foreground Service 자동 시작 실패:', error);
+        }
+
+        // 서비스 상태 확인
+        await checkServiceStatus();
+      }
+    } catch (error: any) {
+      console.error('자동 시작 실패:', error);
     }
   };
 
@@ -233,13 +279,23 @@ const MorningRoutineScreen = () => {
     );
 
     // 초기 권한 상태 확인
-    checkPermission();
-    checkNotificationPermission();
+    const initialize = async () => {
+      await checkPermission();
+      await checkNotificationPermission();
 
-    // Android의 경우 서비스 상태 확인
-    if (Platform.OS === 'android') {
-      checkServiceStatus();
-    }
+      // Android의 경우 서비스 상태 확인
+      if (Platform.OS === 'android') {
+        await checkServiceStatus();
+      }
+
+      // 만보기 권한이 있으면 자동 시작
+      const permissionStatus = await pedometerManager.checkPermissionStatus();
+      if (permissionStatus.hasPermission) {
+        await autoStart();
+      }
+    };
+
+    initialize();
 
     return () => {
       subscription.remove();
