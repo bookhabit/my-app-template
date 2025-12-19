@@ -180,6 +180,86 @@ async function executeSchema(db: SQLite.SQLiteDatabase): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_study_goals_goal_id ON study_goals(goal_id);
     CREATE INDEX IF NOT EXISTS idx_today_todo_dates_date ON today_todo_dates(date);
     CREATE INDEX IF NOT EXISTS idx_today_todo_dates_type ON today_todo_dates(todo_type);
+
+    -- 아침 습관 목표 설정 테이블
+    CREATE TABLE IF NOT EXISTS morning_routine_goals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      year INTEGER NOT NULL,
+      reading_initial_minutes INTEGER,
+      reading_increment_minutes INTEGER,
+      stairs_initial_floors INTEGER,
+      stairs_increment_floors INTEGER,
+      stairs_max_floors INTEGER,
+      pushup_initial_count INTEGER,
+      pushup_increment_count INTEGER,
+      pushup_max_count INTEGER,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    -- 습관별 유튜브 영상 테이블
+    CREATE TABLE IF NOT EXISTS habit_youtube_videos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      habit_type TEXT NOT NULL,
+      video_id TEXT NOT NULL,
+      video_url TEXT NOT NULL,
+      is_shorts INTEGER DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(habit_type)
+    );
+
+    -- 독서 기록 테이블
+    CREATE TABLE IF NOT EXISTS reading_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL,
+      book_name TEXT,
+      page_start INTEGER,
+      page_end INTEGER,
+      summary TEXT,
+      start_time TEXT NOT NULL,
+      end_time TEXT,
+      duration_minutes INTEGER,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(date)
+    );
+
+    -- 계단 기록 테이블
+    CREATE TABLE IF NOT EXISTS stairs_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL,
+      week_number INTEGER NOT NULL,
+      target_floors INTEGER NOT NULL,
+      start_time TEXT NOT NULL,
+      end_time TEXT,
+      duration_minutes INTEGER,
+      steps_count INTEGER,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(date)
+    );
+
+    -- 푸쉬업 기록 테이블
+    CREATE TABLE IF NOT EXISTS pushup_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL,
+      week_number INTEGER NOT NULL,
+      target_count INTEGER NOT NULL,
+      start_time TEXT NOT NULL,
+      end_time TEXT,
+      duration_minutes INTEGER,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(date)
+    );
+
+    -- 인덱스 생성
+    CREATE INDEX IF NOT EXISTS idx_morning_routine_goals_year ON morning_routine_goals(year);
+    CREATE INDEX IF NOT EXISTS idx_habit_youtube_videos_type ON habit_youtube_videos(habit_type);
+    CREATE INDEX IF NOT EXISTS idx_reading_records_date ON reading_records(date);
+    CREATE INDEX IF NOT EXISTS idx_stairs_records_date ON stairs_records(date);
+    CREATE INDEX IF NOT EXISTS idx_pushup_records_date ON pushup_records(date);
     
   `;
 
