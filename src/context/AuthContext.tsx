@@ -15,6 +15,8 @@ import {
   getRefreshToken,
 } from '@/storage/tokenStorage';
 
+import { shouldSkipAuth } from '@/config/auth';
+
 interface AuthContextType {
   isLoggedIn: boolean;
   isLoading: boolean;
@@ -55,6 +57,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const checkTokenState = useCallback(async () => {
     try {
       setIsLoading(true);
+
+      // 인증 건너뛰기 모드인 경우 자동으로 로그인 상태로 설정
+      if (shouldSkipAuth()) {
+        console.log('[Auth] 인증 건너뛰기 모드: 자동 로그인 처리');
+        setHasToken(true);
+        setIsLoading(false);
+        return;
+      }
+
+      // 정상 인증 플로우
       const tokenExists = await hasTokens();
       setHasToken(tokenExists);
     } catch (error) {
@@ -77,6 +89,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const login = useCallback(async (credentials: LoginRequest) => {
     try {
+      // 인증 건너뛰기 모드인 경우 자동으로 성공 처리
+      if (shouldSkipAuth()) {
+        console.log('[Auth] 인증 건너뛰기 모드: 로그인 자동 성공');
+        setHasToken(true);
+        return {
+          accessToken: 'skip-auth-token',
+          refreshToken: 'skip-auth-refresh-token',
+        };
+      }
+
       // 서버에 로그인 요청
       const response = await authApi.login(credentials);
 
@@ -100,6 +122,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const register = useCallback(async (userData: RegisterRequest) => {
     try {
+      // 인증 건너뛰기 모드인 경우 자동으로 성공 처리
+      if (shouldSkipAuth()) {
+        console.log('[Auth] 인증 건너뛰기 모드: 회원가입 자동 성공');
+        setHasToken(true);
+        return {
+          accessToken: 'skip-auth-token',
+          refreshToken: 'skip-auth-refresh-token',
+        };
+      }
+
       // 서버에 회원가입 요청
       const response = await authApi.register(userData);
 
@@ -122,6 +154,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const logout = useCallback(async () => {
     try {
+      // 인증 건너뛰기 모드인 경우에도 로그아웃은 처리
+      // (테스트 중 로그아웃 기능 확인용)
+      if (shouldSkipAuth()) {
+        console.log('[Auth] 인증 건너뛰기 모드: 로그아웃 처리');
+        await clearTokens();
+        setHasToken(false);
+        return;
+      }
+
       // 서버에 로그아웃 요청 (실패해도 클라이언트에서는 로그아웃 처리)
       try {
         const refreshToken = await getRefreshToken();
