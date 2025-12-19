@@ -32,7 +32,6 @@ const MorningRoutineScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [serviceStatus, setServiceStatus] = useState<{
     isServiceRunning: boolean;
-    totalSteps: number;
   } | null>(null);
 
   // 권한 상태 확인
@@ -203,8 +202,11 @@ const MorningRoutineScreen = () => {
       if (status) {
         setServiceStatus({
           isServiceRunning: status.isServiceRunning,
-          totalSteps: status.totalSteps,
         });
+        // 서비스에서 걸음수도 가져와서 todaySteps 업데이트
+        if (status.totalSteps !== undefined) {
+          setTodaySteps(status.totalSteps);
+        }
         console.log('서비스 상태:', status);
       }
     } catch (error: any) {
@@ -258,6 +260,42 @@ const MorningRoutineScreen = () => {
       }
     } catch (error: any) {
       console.error('자동 시작 실패:', error);
+    }
+  };
+
+  // 완료 버튼 - 만보기 기능 종료
+  const handleComplete = async () => {
+    try {
+      setIsLoading(true);
+
+      // 1. 실시간 업데이트 중지
+      if (isUpdating) {
+        try {
+          await pedometerManager.stopUpdates();
+          setIsUpdating(false);
+          console.log('✅ 실시간 업데이트 중지됨');
+        } catch (error: any) {
+          console.error('실시간 업데이트 중지 실패:', error);
+        }
+      }
+
+      // 2. Android의 경우 포그라운드 서비스 중지
+      if (Platform.OS === 'android') {
+        try {
+          await ForegroundServiceUtils.stopService();
+          console.log('✅ Foreground Service 중지됨');
+        } catch (error: any) {
+          console.error('서비스 중지 실패:', error);
+        }
+      }
+
+      // 3. 화면에서 나가기
+      router.back();
+    } catch (error: any) {
+      console.error('완료 처리 실패:', error);
+      Alert.alert('오류', `완료 처리 실패: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -515,34 +553,21 @@ const MorningRoutineScreen = () => {
             </TextBox>
 
             {serviceStatus && (
-              <>
-                <View style={styles.infoRow}>
-                  <TextBox variant="body2" color={theme.textSecondary}>
-                    서비스 상태:
-                  </TextBox>
-                  <TextBox
-                    variant="body2"
-                    color={
-                      serviceStatus.isServiceRunning
-                        ? theme.success || '#4CAF50'
-                        : theme.error || '#F44336'
-                    }
-                  >
-                    {serviceStatus.isServiceRunning
-                      ? '✅ 실행 중'
-                      : '❌ 중지됨'}
-                  </TextBox>
-                </View>
-
-                <View style={styles.infoRow}>
-                  <TextBox variant="body2" color={theme.textSecondary}>
-                    알림센터 걸음수:
-                  </TextBox>
-                  <TextBox variant="body2" color={theme.text}>
-                    {serviceStatus.totalSteps.toLocaleString()} 걸음
-                  </TextBox>
-                </View>
-              </>
+              <View style={styles.infoRow}>
+                <TextBox variant="body2" color={theme.textSecondary}>
+                  서비스 상태:
+                </TextBox>
+                <TextBox
+                  variant="body2"
+                  color={
+                    serviceStatus.isServiceRunning
+                      ? theme.success || '#4CAF50'
+                      : theme.error || '#F44336'
+                  }
+                >
+                  {serviceStatus.isServiceRunning ? '✅ 실행 중' : '❌ 중지됨'}
+                </TextBox>
+              </View>
             )}
 
             <CustomButton
@@ -583,6 +608,25 @@ const MorningRoutineScreen = () => {
               {Platform.OS === 'ios' ? 'iOS' : 'Android'}
             </TextBox>
           </View>
+        </View>
+
+        {/* 완료 버튼 */}
+        <View style={styles.completeSection}>
+          <CustomButton
+            title="완료"
+            variant="primary"
+            onPress={handleComplete}
+            loading={isLoading}
+            fullWidth
+            style={styles.completeButton}
+          />
+          <TextBox
+            variant="caption1"
+            color={theme.textSecondary}
+            style={styles.completeHint}
+          >
+            완료 버튼을 누르면 만보기 기능이 종료되고 이전 화면으로 돌아갑니다.
+          </TextBox>
         </View>
       </ScrollView>
     </View>
@@ -639,6 +683,18 @@ const styles = StyleSheet.create({
   },
   hintText: {
     marginTop: 8,
+    lineHeight: 20,
+  },
+  completeSection: {
+    paddingTop: 8,
+    paddingBottom: 32,
+    gap: 8,
+  },
+  completeButton: {
+    marginBottom: 4,
+  },
+  completeHint: {
+    textAlign: 'center',
     lineHeight: 20,
   },
 });

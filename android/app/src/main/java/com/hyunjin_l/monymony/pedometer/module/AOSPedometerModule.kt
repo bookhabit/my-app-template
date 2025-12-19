@@ -328,7 +328,6 @@ class AOSPedometerModule(reactContext: ReactApplicationContext) :
             val resultMap = Arguments.createMap()
             resultMap.putBoolean("success", true)
             resultMap.putInt("totalSteps", totalSteps.toInt())
-            resultMap.putInt("todaySteps", totalSteps.toInt()) // 센서 기반이므로 totalSteps와 동일
             resultMap.putBoolean("isServiceRunning", isServiceRunning)
             resultMap.putString("serviceName", "PedometerService")
             

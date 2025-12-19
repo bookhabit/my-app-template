@@ -372,7 +372,7 @@ class PedometerService : Service() {
         )
         
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_notification_pedometer)
             .setContentTitle("걸음수 측정 중")
             .setContentText("서비스 실행 중...")
             .setContentIntent(pendingIntent)
@@ -525,7 +525,7 @@ class PedometerService : Service() {
             
             // 커스텀 RemoteViews를 사용한 알림 생성
             NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setSmallIcon(R.drawable.ic_notification_pedometer)
                 .setContentIntent(pendingIntent)
                 .setCustomContentView(remoteViews) // 접힌 상태 (기본 영역)
                 .setCustomBigContentView(remoteViews) // 확장 상태 (드래그 시)
@@ -560,7 +560,7 @@ class PedometerService : Service() {
     ): Notification {
         // 기본 알림 생성 (RemoteViews 없이)
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_notification_pedometer)
             .setContentTitle(title)
             .setContentText("걸음수 측정 중")
             .setContentIntent(contentIntent)
@@ -614,7 +614,6 @@ class PedometerService : Service() {
             // ✅ 실제 서비스 상태 반환 (센서 기반)
             putBoolean("isRunning", isServiceRunning)
             putInt("totalSteps", totalSteps.toInt())
-            putInt("todaySteps", totalSteps.toInt()) // 센서 기반이므로 totalSteps와 동일
             putString("serviceName", "PedometerService")
         }
     }
