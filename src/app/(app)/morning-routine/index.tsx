@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, StyleSheet, Alert, Platform } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  Platform,
+  TextInput,
+  LayoutRectangle,
+} from 'react-native';
+import { PLAYER_STATES } from 'react-native-youtube-iframe';
 
 import { useRouter } from 'expo-router';
 
@@ -9,8 +18,11 @@ import PedometerManager from '@/manager/PedometerManager';
 import TextBox from '@/components/common/TextBox';
 import { CustomButton } from '@/components/common/button';
 import CustomHeader from '@/components/layout/CustomHeader';
+import HorizontalVideoPlayer from '@/components/player/HorizontalVideoPlayer';
+import ShortsVideoPlayer from '@/components/player/ShortsVideoPlayer';
 
 import ForegroundServiceUtils from '@/utils/foregroundServiceUtils';
+import { extractYouTubeInfo } from '@/utils/youtube';
 
 const MorningRoutineScreen = () => {
   const router = useRouter();
@@ -33,6 +45,16 @@ const MorningRoutineScreen = () => {
   const [serviceStatus, setServiceStatus] = useState<{
     isServiceRunning: boolean;
   } | null>(null);
+
+  // 유튜브 비디오 관련 상태
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [videoId, setVideoId] = useState<string | null>(null);
+  const [isShorts, setIsShorts] = useState(false);
+  const [playerState, setPlayerState] = useState<PLAYER_STATES>(
+    PLAYER_STATES.UNSTARTED
+  );
+  const [isPlayerReady, setIsPlayerReady] = useState(false);
+  const [videoLayout, setVideoLayout] = useState<LayoutRectangle | null>(null);
 
   // 권한 상태 확인
   const checkPermission = async () => {
@@ -261,6 +283,46 @@ const MorningRoutineScreen = () => {
     } catch (error: any) {
       console.error('자동 시작 실패:', error);
     }
+  };
+
+  // 유튜브 비디오 로드
+  const handleLoadVideo = () => {
+    if (!youtubeUrl.trim()) {
+      Alert.alert('오류', '유튜브 링크를 입력해주세요.');
+      return;
+    }
+
+    const { videoId: extractedId, isShorts: isShortsVideo } =
+      extractYouTubeInfo(youtubeUrl.trim());
+
+    if (!extractedId) {
+      Alert.alert('오류', '유효한 유튜브 링크가 아닙니다.');
+      return;
+    }
+
+    setVideoId(extractedId);
+    setIsShorts(isShortsVideo);
+    setIsPlayerReady(false);
+    setPlayerState(PLAYER_STATES.UNSTARTED);
+    console.log('유튜브 비디오 ID:', extractedId, '쇼츠:', isShortsVideo);
+  };
+
+  // 플레이어 상태 변경 핸들러
+  const handlePlayerStateChange = (state: PLAYER_STATES) => {
+    setPlayerState(state);
+    console.log('플레이어 상태 변경:', state);
+  };
+
+  // 플레이어 준비 핸들러
+  const handlePlayerReady = () => {
+    setIsPlayerReady(true);
+    console.log('플레이어 준비 완료');
+  };
+
+  // 플레이어 에러 핸들러
+  const handlePlayerError = (error: any) => {
+    console.error('플레이어 에러:', error);
+    Alert.alert('오류', '비디오 재생 중 오류가 발생했습니다.');
   };
 
   // 완료 버튼 - 만보기 기능 종료
@@ -590,6 +652,85 @@ const MorningRoutineScreen = () => {
           </View>
         )}
 
+        {/* 유튜브 비디오 플레이어 섹션 */}
+        <View style={[styles.section, { backgroundColor: theme.surface }]}>
+          <TextBox
+            variant="body1"
+            color={theme.text}
+            style={styles.sectionTitle}
+          >
+            유튜브 비디오 재생
+          </TextBox>
+
+          <TextInput
+            style={[
+              styles.textInput,
+              {
+                backgroundColor: theme.background,
+                color: theme.text,
+                borderColor: theme.border || theme.textSecondary,
+              },
+            ]}
+            placeholder="유튜브 링크를 입력하세요"
+            placeholderTextColor={theme.textSecondary}
+            value={youtubeUrl}
+            onChangeText={setYoutubeUrl}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+
+          <CustomButton
+            title="비디오 로드"
+            variant="primary"
+            onPress={handleLoadVideo}
+            fullWidth
+            style={styles.button}
+          />
+
+          {videoId && (
+            <View
+              style={styles.videoContainer}
+              onLayout={(event) => {
+                setVideoLayout(event.nativeEvent.layout);
+              }}
+            >
+              {isShorts ? (
+                videoLayout ? (
+                  <ShortsVideoPlayer
+                    videoId={videoId}
+                    onChangeState={handlePlayerStateChange}
+                    onReady={handlePlayerReady}
+                    onError={handlePlayerError}
+                    layout={videoLayout}
+                  />
+                ) : (
+                  <View style={styles.videoPlaceholder}>
+                    <TextBox variant="body2" color={theme.textSecondary}>
+                      로딩 중...
+                    </TextBox>
+                  </View>
+                )
+              ) : (
+                <HorizontalVideoPlayer
+                  videoId={videoId}
+                  onChangeState={handlePlayerStateChange}
+                  onReady={handlePlayerReady}
+                  onError={handlePlayerError}
+                />
+              )}
+              {isPlayerReady && (
+                <TextBox
+                  variant="caption1"
+                  color={theme.textSecondary}
+                  style={styles.videoStatus}
+                >
+                  {isShorts ? '쇼츠' : '일반 영상'} 플레이어 준비 완료
+                </TextBox>
+              )}
+            </View>
+          )}
+        </View>
+
         {/* 플랫폼 정보 */}
         <View style={[styles.section, { backgroundColor: theme.surface }]}>
           <TextBox
@@ -696,6 +837,28 @@ const styles = StyleSheet.create({
   completeHint: {
     textAlign: 'center',
     lineHeight: 20,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    marginBottom: 12,
+  },
+  videoContainer: {
+    marginTop: 16,
+    borderRadius: 8,
+    overflow: 'hidden',
+    minHeight: 200,
+  },
+  videoPlaceholder: {
+    minHeight: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  videoStatus: {
+    marginTop: 8,
+    textAlign: 'center',
   },
 });
 
