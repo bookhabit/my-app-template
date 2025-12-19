@@ -24,5 +24,22 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true
-  }
+  },
+  "[kotlin]": {
+    "editor.defaultFormatter": "fwcd.kotlin",
+    "editor.formatOnSave": false
+  },
+  // Kotlin Language Server 비활성화
+  // Android Studio에서만 정확한 Kotlin 검증이 가능하므로 VS Code에서는 비활성화
+  "kotlin.languageServer.enabled": false,
+  // VS Code가 Android 프로젝트를 인식하도록 설정
+  "files.exclude": {
+    "**/.gradle": true,
+    "**/build": true,
+    "**/.idea": false
+  },
+  // Java 확장 프로그램으로 Gradle 프로젝트 인식
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.gradle.enabled": true,
+  "java.import.gradle.wrapper.enabled": true
 }
