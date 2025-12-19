@@ -5,7 +5,18 @@ import {
   getDateRecord,
 } from '@/db/morningRoutineRepository';
 
-import type { DateRecord } from '@/types/morning-routine';
+import type {
+  DateRecord,
+  ReadingRecord,
+  StairsRecord,
+  PushupRecord,
+} from '@/types/morning-routine';
+
+export type DateRecordDetail = {
+  reading: ReadingRecord | null;
+  stairs: StairsRecord | null;
+  pushup: PushupRecord | null;
+};
 
 export function useMonthlyRecords(year: number, month: number) {
   const [records, setRecords] = useState<{
@@ -26,17 +37,17 @@ export function useMonthlyRecords(year: number, month: number) {
     }
   }, [year, month]);
 
-  // 날짜별 기록 조회
+  // 날짜별 기록 조회 (상세 정보 포함)
   const getDateRecordData = useCallback(
-    async (date: string): Promise<DateRecord | null> => {
+    async (date: string): Promise<DateRecordDetail | null> => {
       try {
         const data = await getDateRecord(date);
         if (!data) return null;
 
         return {
-          reading: !!data.reading?.end_time,
-          stairs: !!data.stairs?.end_time,
-          pushup: !!data.pushup?.end_time,
+          reading: data.reading,
+          stairs: data.stairs,
+          pushup: data.pushup,
         };
       } catch (error) {
         console.error('날짜별 기록 조회 실패:', error);
