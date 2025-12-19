@@ -79,7 +79,7 @@ export default function HomeScreen() {
             },
             {
               title: '아침루틴',
-              route: '/(app)/routine',
+              route: '/(app)/morning-routine',
               color: theme.accentBlue,
             },
           ]}

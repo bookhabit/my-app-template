@@ -17,6 +17,7 @@ import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 import com.hyunjin_l.monymony.nativelocalstorage.NativeLocalStoragePackage
 import com.hyunjin_l.monymony.timer.NativeTimerPackage
+import com.hyunjin_l.monymony.pedometer.module.AOSPedometerPackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -29,6 +30,7 @@ class MainApplication : Application(), ReactApplication {
               // add(MyReactNativePackage())
               add(NativeLocalStoragePackage())
               add(NativeTimerPackage())
+              add(AOSPedometerPackage())
             }
 
           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"

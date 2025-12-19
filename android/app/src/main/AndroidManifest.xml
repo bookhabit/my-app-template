@@ -4,7 +4,9 @@
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
   <uses-permission android:name="android.permission.VIBRATE"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH"/>
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
   <uses-permission android:name="android.permission.READ_CALENDAR"/>
   <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
@@ -47,5 +49,10 @@
       </intent-filter>
     </activity>
     <service android:name=".timer.TimerService" android:enabled="true" android:exported="false" android:foregroundServiceType="shortService"/>
+    <service 
+        android:name=".pedometer.service.PedometerService" 
+        android:enabled="true" 
+        android:exported="false" 
+        android:foregroundServiceType="health"/>
   </application>
 </manifest>

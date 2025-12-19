@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp">
+
+    <!-- 왼쪽: 걸음수 정보 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_gravity="start|center_vertical">
+
+        <!-- 숫자 부분 (2배 크기, 다크모드 지원) -->
+        <TextView
+            android:id="@+id/notification_steps_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/notification_steps_number"
+            android:layout_marginEnd="4dp"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="0dp"
+            android:lineSpacingMultiplier="1.0"/>
+
+        <!-- "걸음" 텍스트 (일반 크기, 다크모드 지원) -->
+        <TextView
+            android:id="@+id/notification_steps_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="걸음"
+            android:textSize="12sp"
+            android:textColor="@color/notification_steps_text"
+            android:includeFontPadding="false"/>
+    </LinearLayout>
+
+</FrameLayout>
