@@ -303,9 +303,20 @@ class PedometerService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d("PedometerService", "🛑 서비스 종료")
+        
+        // 알림 제거
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        } else {
+            @Suppress("DEPRECATION")
+            stopForeground(true)
+        }
+        notificationManager.cancel(NOTIFICATION_ID)
+        
         stepCounterManager?.unregisterSensor()
         setRunning(false)
         isForegroundStarted = false
+        Log.d("PedometerService", "✅ 알림 제거 완료")
     }
     
     /**
