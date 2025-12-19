@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Alert,
-  TextInput,
-  LayoutRectangle,
-} from 'react-native';
-import { PLAYER_STATES } from 'react-native-youtube-iframe';
+import { View, ScrollView, StyleSheet, Alert, TextInput } from 'react-native';
 
 import { useRouter } from 'expo-router';
 
@@ -17,10 +9,8 @@ import { Input } from '@/components/common/Input';
 import TextBox from '@/components/common/TextBox';
 import { CustomButton } from '@/components/common/button';
 import CustomHeader from '@/components/layout/CustomHeader';
-import HorizontalVideoPlayer from '@/components/player/HorizontalVideoPlayer';
-import ShortsVideoPlayer from '@/components/player/ShortsVideoPlayer';
+import HabitYoutubeVideoSection from '@/components/morning-routine/HabitYoutubeVideoSection';
 
-import { useHabitYoutubeVideo } from '@/hooks/morning-routine/useHabitYoutubeVideo';
 import { useReadingRecord } from '@/hooks/morning-routine/useReadingRecord';
 
 export default function ReadingScreen() {
@@ -28,48 +18,12 @@ export default function ReadingScreen() {
   const { theme } = useTheme();
   const { todayRecord, isLoading, startReading, completeReading, isReading } =
     useReadingRecord();
-  const {
-    video,
-    saveVideo,
-    isLoading: isVideoLoading,
-  } = useHabitYoutubeVideo('reading');
-
-  // 유튜브 영상 관련 상태
-  const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [isEditingVideo, setIsEditingVideo] = useState(false);
-  const [playerState, setPlayerState] = useState<PLAYER_STATES>(
-    PLAYER_STATES.UNSTARTED
-  );
-  const [isPlayerReady, setIsPlayerReady] = useState(false);
-  const [videoLayout, setVideoLayout] = useState<LayoutRectangle>({
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  });
 
   // 완료 폼 상태
   const [bookName, setBookName] = useState('');
   const [pageStart, setPageStart] = useState('');
   const [pageEnd, setPageEnd] = useState('');
   const [summary, setSummary] = useState('');
-
-  // 영상 로드
-  const handleLoadVideo = async () => {
-    if (!youtubeUrl.trim()) {
-      Alert.alert('오류', '유튜브 링크를 입력해주세요.');
-      return;
-    }
-
-    try {
-      await saveVideo(youtubeUrl);
-      setYoutubeUrl('');
-      setIsEditingVideo(false);
-      Alert.alert('성공', '영상이 등록되었습니다.');
-    } catch (error: any) {
-      Alert.alert('오류', error.message || '영상 등록에 실패했습니다.');
-    }
-  };
 
   // 독서 시작
   const handleStartReading = async () => {
@@ -123,101 +77,43 @@ export default function ReadingScreen() {
         contentContainerStyle={styles.content}
       >
         {/* 유튜브 영상 섹션 */}
-        <View style={[styles.section, { backgroundColor: theme.surface }]}>
-          <TextBox variant="title2" style={styles.sectionTitle}>
-            유튜브 영상
-          </TextBox>
-
-          {!isEditingVideo && video && (
-            <View style={styles.videoContainer}>
-              {video.is_shorts ? (
-                <View
-                  onLayout={(e) => setVideoLayout(e.nativeEvent.layout)}
-                  style={styles.videoWrapper}
-                >
-                  {videoLayout.width > 0 && (
-                    <ShortsVideoPlayer
-                      videoId={video.video_id}
-                      onChangeState={setPlayerState}
-                      onReady={() => setIsPlayerReady(true)}
-                      onError={(error) => {
-                        console.error('영상 재생 오류:', error);
-                        Alert.alert('오류', '영상 재생에 실패했습니다.');
-                      }}
-                      layout={videoLayout}
-                    />
-                  )}
-                </View>
-              ) : (
-                <HorizontalVideoPlayer
-                  videoId={video.video_id}
-                  onChangeState={setPlayerState}
-                  onReady={() => setIsPlayerReady(true)}
-                  onError={(error) => {
-                    console.error('영상 재생 오류:', error);
-                    Alert.alert('오류', '영상 재생에 실패했습니다.');
-                  }}
-                />
-              )}
-            </View>
-          )}
-
-          {isEditingVideo && (
-            <View style={styles.editVideoContainer}>
-              <Input
-                label="유튜브 링크"
-                value={youtubeUrl}
-                onChangeText={setYoutubeUrl}
-                placeholder="https://youtube.com/..."
-                style={styles.input}
-              />
-              <View style={styles.buttonRow}>
-                <CustomButton
-                  title="취소"
-                  variant="outline"
-                  onPress={() => {
-                    setIsEditingVideo(false);
-                    setYoutubeUrl('');
-                  }}
-                  style={styles.button}
-                />
-                <CustomButton
-                  title="등록"
-                  onPress={handleLoadVideo}
-                  loading={isVideoLoading}
-                  style={styles.button}
-                />
-              </View>
-            </View>
-          )}
-
-          {!isEditingVideo && (
-            <CustomButton
-              title={video ? '영상 수정' : '영상 등록'}
-              variant="outline"
-              onPress={() => setIsEditingVideo(true)}
-              style={styles.editButton}
-            />
-          )}
-        </View>
+        <HabitYoutubeVideoSection habitType="reading" />
 
         {/* 독서 시작/완료 섹션 */}
-        <View style={[styles.section, { backgroundColor: theme.surface }]}>
-          <TextBox variant="title2" style={styles.sectionTitle}>
-            독서 기록
+        <View
+          style={[
+            styles.recordCard,
+            {
+              backgroundColor: theme.surface,
+              borderLeftColor: isReading
+                ? theme.success
+                : todayRecord?.end_time
+                  ? theme.accentBlue
+                  : theme.primary,
+            },
+          ]}
+        >
+          <TextBox variant="title3" style={styles.sectionTitle}>
+            📚 독서 기록
           </TextBox>
 
           {!isReading && !todayRecord?.end_time && (
             <CustomButton
-              title="독서 시작"
+              title="🚀 독서 시작"
               onPress={handleStartReading}
               loading={isLoading}
               fullWidth
+              style={styles.startButton}
             />
           )}
 
           {isReading && (
             <View style={styles.completeForm}>
+              <View style={styles.activeBadge}>
+                <TextBox variant="body2" color={theme.success}>
+                  ⏱️ 진행 중...
+                </TextBox>
+              </View>
               <Input
                 label="책 이름"
                 value={bookName}
@@ -263,16 +159,30 @@ export default function ReadingScreen() {
 
           {todayRecord?.end_time && (
             <View style={styles.completedInfo}>
-              <TextBox variant="body1">
-                완료 시간: {todayRecord.duration_minutes}분
+              <View style={styles.completedBadge}>
+                <TextBox variant="body2" color={theme.accentBlue}>
+                  ✓ 완료
+                </TextBox>
+              </View>
+              <TextBox variant="body1" style={styles.durationText}>
+                ⏱️ {todayRecord.duration_minutes}분
               </TextBox>
               {todayRecord.book_name && (
-                <TextBox variant="body1">책: {todayRecord.book_name}</TextBox>
+                <View style={styles.bookInfo}>
+                  <TextBox variant="body2" color={theme.textSecondary}>
+                    📖
+                  </TextBox>
+                  <TextBox variant="body1" style={styles.bookName}>
+                    {todayRecord.book_name}
+                  </TextBox>
+                </View>
               )}
               {todayRecord.page_start && todayRecord.page_end && (
-                <TextBox variant="body1">
-                  페이지: {todayRecord.page_start} - {todayRecord.page_end}
-                </TextBox>
+                <View style={styles.pageInfo}>
+                  <TextBox variant="body2" color={theme.textSecondary}>
+                    📄 {todayRecord.page_start} - {todayRecord.page_end} 페이지
+                  </TextBox>
+                </View>
               )}
             </View>
           )}
@@ -292,13 +202,34 @@ const styles = StyleSheet.create({
   content: {
     padding: 16,
   },
-  section: {
-    padding: 16,
-    borderRadius: 12,
+  recordCard: {
+    padding: 20,
+    borderRadius: 16,
     marginBottom: 16,
+    borderLeftWidth: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   sectionTitle: {
     marginBottom: 16,
+    fontWeight: '700',
+  },
+  startButton: {
+    marginTop: 8,
+  },
+  activeBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: 'rgba(52, 199, 89, 0.1)',
+    marginBottom: 12,
   },
   videoContainer: {
     marginBottom: 16,
@@ -336,7 +267,33 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   completedInfo: {
-    marginTop: 8,
+    marginTop: 12,
+    gap: 12,
+  },
+  completedBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: 'rgba(91, 141, 239, 0.1)',
+  },
+  durationText: {
+    fontWeight: '600',
+  },
+  bookInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: 'rgba(91, 141, 239, 0.05)',
+  },
+  bookName: {
+    fontWeight: '600',
+  },
+  pageInfo: {
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: 'rgba(91, 141, 239, 0.05)',
   },
 });

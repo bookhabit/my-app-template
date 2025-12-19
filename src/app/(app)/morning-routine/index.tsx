@@ -119,14 +119,24 @@ export default function MorningRoutineScreen() {
         contentContainerStyle={styles.content}
       >
         {/* 목표 설정 섹션 */}
-        <View style={[styles.section, { backgroundColor: theme.surface }]}>
+        <View
+          style={[
+            styles.goalSection,
+            {
+              backgroundColor: theme.surface,
+              borderLeftColor: theme.accentBlue,
+            },
+          ]}
+        >
           <View style={styles.sectionHeader}>
-            <TextBox variant="title2" style={styles.sectionTitle}>
-              2026년 목표 설정
-            </TextBox>
+            <View style={styles.titleContainer}>
+              <TextBox variant="title2" style={styles.sectionTitle}>
+                🎯 2026년 목표 설정
+              </TextBox>
+            </View>
             {!isEditing && (
               <CustomButton
-                title="수정"
+                title="✏️ 수정"
                 size="small"
                 variant="outline"
                 onPress={handleStartEdit}
@@ -264,38 +274,134 @@ export default function MorningRoutineScreen() {
           ) : (
             <View style={styles.goalsDisplay}>
               {/* 독서 목표 */}
-              <View style={styles.goalItem}>
-                <TextBox variant="body2" style={styles.goalLabel}>
-                  독서
-                </TextBox>
-                <TextBox variant="body1">
-                  초기: {goals?.reading_initial_minutes || '-'}분 / 증량:{' '}
-                  {goals?.reading_increment_minutes || '-'}분
-                </TextBox>
+              <View
+                style={[
+                  styles.goalCard,
+                  {
+                    backgroundColor: 'rgba(91, 141, 239, 0.05)',
+                    borderLeftColor: theme.accentBlue,
+                  },
+                ]}
+              >
+                <View style={styles.goalCardHeader}>
+                  <TextBox variant="body1" style={styles.goalLabel}>
+                    📚 독서
+                  </TextBox>
+                </View>
+                <View style={styles.goalCardContent}>
+                  <View style={styles.goalValueRow}>
+                    <TextBox variant="caption1" color={theme.textSecondary}>
+                      초기
+                    </TextBox>
+                    <TextBox variant="body2" style={styles.goalValue}>
+                      {goals?.reading_initial_minutes || '-'}분
+                    </TextBox>
+                  </View>
+                  <View style={styles.goalValueRow}>
+                    <TextBox variant="caption1" color={theme.textSecondary}>
+                      증량
+                    </TextBox>
+                    <TextBox variant="body2" style={styles.goalValue}>
+                      {goals?.reading_increment_minutes || '-'}분/일
+                    </TextBox>
+                  </View>
+                </View>
               </View>
 
               {/* 계단 목표 */}
-              <View style={styles.goalItem}>
-                <TextBox variant="body2" style={styles.goalLabel}>
-                  계단 (현재 주차 목표: {currentWeekStairsTarget}층)
-                </TextBox>
-                <TextBox variant="body1">
-                  초기: {goals?.stairs_initial_floors || '-'}층 / 증량:{' '}
-                  {goals?.stairs_increment_floors || '-'}층 / 최대:{' '}
-                  {goals?.stairs_max_floors || '-'}층
-                </TextBox>
+              <View
+                style={[
+                  styles.goalCard,
+                  {
+                    backgroundColor: 'rgba(52, 199, 89, 0.05)',
+                    borderLeftColor: theme.success,
+                  },
+                ]}
+              >
+                <View style={styles.goalCardHeader}>
+                  <TextBox variant="body1" style={styles.goalLabel}>
+                    🏃 계단
+                  </TextBox>
+                  <View style={styles.currentTargetBadge}>
+                    <TextBox variant="caption2" color={theme.success}>
+                      현재 목표: {currentWeekStairsTarget}층
+                    </TextBox>
+                  </View>
+                </View>
+                <View style={styles.goalCardContent}>
+                  <View style={styles.goalValueRow}>
+                    <TextBox variant="caption1" color={theme.textSecondary}>
+                      초기
+                    </TextBox>
+                    <TextBox variant="body2" style={styles.goalValue}>
+                      {goals?.stairs_initial_floors || '-'}층
+                    </TextBox>
+                  </View>
+                  <View style={styles.goalValueRow}>
+                    <TextBox variant="caption1" color={theme.textSecondary}>
+                      증량
+                    </TextBox>
+                    <TextBox variant="body2" style={styles.goalValue}>
+                      {goals?.stairs_increment_floors || '-'}층/주
+                    </TextBox>
+                  </View>
+                  <View style={styles.goalValueRow}>
+                    <TextBox variant="caption1" color={theme.textSecondary}>
+                      최대
+                    </TextBox>
+                    <TextBox variant="body2" style={styles.goalValue}>
+                      {goals?.stairs_max_floors || '-'}층
+                    </TextBox>
+                  </View>
+                </View>
               </View>
 
               {/* 푸쉬업 목표 */}
-              <View style={styles.goalItem}>
-                <TextBox variant="body2" style={styles.goalLabel}>
-                  푸쉬업 (현재 주차 목표: {currentWeekPushupTarget}개)
-                </TextBox>
-                <TextBox variant="body1">
-                  초기: {goals?.pushup_initial_count || '-'}개 / 증량:{' '}
-                  {goals?.pushup_increment_count || '-'}개 / 최대:{' '}
-                  {goals?.pushup_max_count || '-'}개
-                </TextBox>
+              <View
+                style={[
+                  styles.goalCard,
+                  {
+                    backgroundColor: 'rgba(255, 107, 107, 0.05)',
+                    borderLeftColor: theme.workoutChallenge,
+                  },
+                ]}
+              >
+                <View style={styles.goalCardHeader}>
+                  <TextBox variant="body1" style={styles.goalLabel}>
+                    💪 푸쉬업
+                  </TextBox>
+                  <View style={styles.currentTargetBadge}>
+                    <TextBox variant="caption2" color={theme.workoutChallenge}>
+                      현재 목표: {currentWeekPushupTarget}개
+                    </TextBox>
+                  </View>
+                </View>
+                <View style={styles.goalCardContent}>
+                  <View style={styles.goalValueRow}>
+                    <TextBox variant="caption1" color={theme.textSecondary}>
+                      초기
+                    </TextBox>
+                    <TextBox variant="body2" style={styles.goalValue}>
+                      {goals?.pushup_initial_count || '-'}개
+                    </TextBox>
+                  </View>
+                  <View style={styles.goalValueRow}>
+                    <TextBox variant="caption1" color={theme.textSecondary}>
+                      증량
+                    </TextBox>
+                    <TextBox variant="body2" style={styles.goalValue}>
+                      {goals?.pushup_increment_count || '-'}개/주
+                    </TextBox>
+                  </View>
+                  <View style={styles.goalValueRow}>
+                    <TextBox variant="caption1" color={theme.textSecondary}>
+                      최대
+                    </TextBox>
+                    <TextBox variant="body2" style={styles.goalValue}>
+                      {goals?.pushup_max_count || '-'}개
+                    </TextBox>
+                  </View>
+                </View>
               </View>
             </View>
           )}
@@ -303,18 +409,38 @@ export default function MorningRoutineScreen() {
 
         {/* 네비게이션 버튼 */}
         <View style={styles.navigationSection}>
-          <CustomButton
-            title="아침습관 월별 기록 보기"
-            onPress={() => router.push('/(app)/morning-routine/monthly')}
-            fullWidth
-            style={styles.navButton}
-          />
-          <CustomButton
-            title="오늘 아침 습관 시작"
-            onPress={() => router.push('/(app)/morning-routine/today')}
-            fullWidth
-            style={styles.navButton}
-          />
+          <View
+            style={[
+              styles.navCard,
+              {
+                backgroundColor: theme.surface,
+                borderLeftColor: theme.accentPurple,
+              },
+            ]}
+          >
+            <CustomButton
+              title="📅 아침습관 월별 기록 보기"
+              onPress={() => router.push('/(app)/morning-routine/monthly')}
+              fullWidth
+              style={styles.navButton}
+            />
+          </View>
+          <View
+            style={[
+              styles.navCard,
+              {
+                backgroundColor: theme.surface,
+                borderLeftColor: theme.accentBlue,
+              },
+            ]}
+          >
+            <CustomButton
+              title="🚀 오늘 아침 습관 시작"
+              onPress={() => router.push('/(app)/morning-routine/today')}
+              fullWidth
+              style={styles.navButton}
+            />
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -336,10 +462,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  section: {
-    padding: 16,
-    borderRadius: 12,
+  goalSection: {
+    padding: 20,
+    borderRadius: 16,
     marginBottom: 16,
+    borderLeftWidth: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -347,8 +482,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  titleContainer: {
+    flex: 1,
+  },
   sectionTitle: {
     marginBottom: 0,
+    fontWeight: '700',
   },
   editContainer: {
     marginTop: 8,
@@ -370,16 +509,56 @@ const styles = StyleSheet.create({
   },
   goalsDisplay: {
     marginTop: 8,
+    gap: 12,
   },
-  goalItem: {
-    marginBottom: 16,
+  goalCard: {
+    padding: 16,
+    borderRadius: 12,
+    borderLeftWidth: 3,
+    marginBottom: 12,
+  },
+  goalCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   goalLabel: {
-    marginBottom: 4,
+    fontWeight: '700',
+  },
+  currentTargetBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: 'rgba(91, 141, 239, 0.1)',
+  },
+  goalCardContent: {
+    gap: 8,
+  },
+  goalValueRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  goalValue: {
     fontWeight: '600',
   },
   navigationSection: {
     gap: 12,
+  },
+  navCard: {
+    padding: 16,
+    borderRadius: 16,
+    borderLeftWidth: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
   navButton: {
     marginBottom: 0,
