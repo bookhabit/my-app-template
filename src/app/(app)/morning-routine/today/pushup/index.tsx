@@ -25,6 +25,7 @@ export default function PushupScreen() {
     startPushup,
     completePushup,
     isPushupActive,
+    resetTodayRecord,
   } = usePushupRecord(targetCount);
 
   // 푸쉬업 시작
@@ -46,6 +47,25 @@ export default function PushupScreen() {
     } catch (error: any) {
       Alert.alert('오류', error.message || '푸쉬업 완료에 실패했습니다.');
     }
+  };
+
+  // 오늘 기록 초기화
+  const handleResetTodayRecord = async () => {
+    Alert.alert('기록 초기화', '오늘의 푸쉬업 기록을 초기화하시겠습니까?', [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '초기화',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await resetTodayRecord();
+            Alert.alert('완료', '오늘의 기록이 초기화되었습니다.');
+          } catch (error: any) {
+            Alert.alert('오류', error.message || '기록 초기화에 실패했습니다.');
+          }
+        },
+      },
+    ]);
   };
 
   return (
@@ -156,6 +176,16 @@ export default function PushupScreen() {
               </TextBox>
             </View>
           )}
+
+          {/* 초기화 버튼 */}
+          <View style={styles.resetButtonContainer}>
+            <CustomButton
+              title="🔄 오늘 기록 초기화"
+              variant="outline"
+              onPress={handleResetTodayRecord}
+              style={styles.resetButton}
+            />
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -263,5 +293,14 @@ const styles = StyleSheet.create({
   timerTitle: {
     marginBottom: 12,
     fontWeight: '700',
+  },
+  resetButtonContainer: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  resetButton: {
+    borderColor: '#FF3B30',
   },
 });

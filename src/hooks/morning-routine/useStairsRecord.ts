@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Platform } from 'react-native';
 
-import type { StairsRecord } from '@/types/morning-routine';
 import {
   getTodayStairsRecord,
   upsertStairsRecord,
+  deleteTodayStairsRecord,
 } from '@/db/morningRoutineRepository';
 import PedometerManager from '@/manager/PedometerManager';
+
+import type { StairsRecord } from '@/types/morning-routine';
+
 import ForegroundServiceUtils from '@/utils/foregroundServiceUtils';
-import { Platform } from 'react-native';
 
 function getTodayDateString(): string {
   const today = new Date();
@@ -18,10 +21,7 @@ function getCurrentTimeISO(): string {
   return new Date().toISOString();
 }
 
-function calculateDurationMinutes(
-  startTime: string,
-  endTime: string
-): number {
+function calculateDurationMinutes(startTime: string, endTime: string): number {
   const start = new Date(startTime);
   const end = new Date(endTime);
   return Math.floor((end.getTime() - start.getTime()) / (1000 * 60));
@@ -185,6 +185,35 @@ export function useStairsRecord(targetFloors: number) {
     };
   }, [isStairsActive, pedometerManager]);
 
+  // 오늘 기록 초기화
+  const resetTodayRecord = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const date = getTodayDateString();
+
+      // 만보기 서비스 중지
+      if (Platform.OS === 'android') {
+        try {
+          await pedometerManager.stopUpdates();
+          await ForegroundServiceUtils.stopService();
+        } catch (error) {
+          console.error('만보기 서비스 중지 실패:', error);
+        }
+      }
+
+      const success = await deleteTodayStairsRecord(date);
+      if (success) {
+        setCurrentSteps(0);
+        await loadTodayRecord();
+      }
+    } catch (error) {
+      console.error('계단 기록 초기화 실패:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [loadTodayRecord, pedometerManager]);
+
   useEffect(() => {
     loadTodayRecord();
   }, [loadTodayRecord]);
@@ -197,6 +226,6 @@ export function useStairsRecord(targetFloors: number) {
     isStairsActive,
     currentSteps,
     refresh: loadTodayRecord,
+    resetTodayRecord,
   };
 }
-

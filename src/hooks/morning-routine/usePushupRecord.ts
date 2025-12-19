@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import type { PushupRecord } from '@/types/morning-routine';
 import {
   getTodayPushupRecord,
   upsertPushupRecord,
+  deleteTodayPushupRecord,
 } from '@/db/morningRoutineRepository';
+
+import type { PushupRecord } from '@/types/morning-routine';
 
 function getTodayDateString(): string {
   const today = new Date();
@@ -15,10 +17,7 @@ function getCurrentTimeISO(): string {
   return new Date().toISOString();
 }
 
-function calculateDurationMinutes(
-  startTime: string,
-  endTime: string
-): number {
+function calculateDurationMinutes(startTime: string, endTime: string): number {
   const start = new Date(startTime);
   const end = new Date(endTime);
   return Math.floor((end.getTime() - start.getTime()) / (1000 * 60));
@@ -116,6 +115,23 @@ export function usePushupRecord(targetCount: number) {
     }
   }, [todayRecord, loadTodayRecord]);
 
+  // 오늘 기록 초기화
+  const resetTodayRecord = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const date = getTodayDateString();
+      const success = await deleteTodayPushupRecord(date);
+      if (success) {
+        await loadTodayRecord();
+      }
+    } catch (error) {
+      console.error('푸쉬업 기록 초기화 실패:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [loadTodayRecord]);
+
   useEffect(() => {
     loadTodayRecord();
   }, [loadTodayRecord]);
@@ -127,6 +143,6 @@ export function usePushupRecord(targetCount: number) {
     completePushup,
     isPushupActive,
     refresh: loadTodayRecord,
+    resetTodayRecord,
   };
 }
-

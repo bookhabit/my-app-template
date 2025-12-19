@@ -26,6 +26,7 @@ export default function StairsScreen() {
     completeStairs,
     isStairsActive,
     currentSteps,
+    resetTodayRecord,
   } = useStairsRecord(targetFloors);
 
   // 계단 운동 시작
@@ -47,6 +48,25 @@ export default function StairsScreen() {
     } catch (error: any) {
       Alert.alert('오류', error.message || '계단 운동 완료에 실패했습니다.');
     }
+  };
+
+  // 오늘 기록 초기화
+  const handleResetTodayRecord = async () => {
+    Alert.alert('기록 초기화', '오늘의 계단 운동 기록을 초기화하시겠습니까?', [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '초기화',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await resetTodayRecord();
+            Alert.alert('완료', '오늘의 기록이 초기화되었습니다.');
+          } catch (error: any) {
+            Alert.alert('오류', error.message || '기록 초기화에 실패했습니다.');
+          }
+        },
+      },
+    ]);
   };
 
   return (
@@ -159,6 +179,15 @@ export default function StairsScreen() {
               )}
             </View>
           )}
+          {/* 초기화 버튼 */}
+          <View style={styles.resetButtonContainer}>
+            <CustomButton
+              title="🔄 오늘 기록 초기화"
+              variant="outline"
+              onPress={handleResetTodayRecord}
+              style={styles.resetButton}
+            />
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -256,5 +285,14 @@ const styles = StyleSheet.create({
   },
   durationText: {
     fontWeight: '600',
+  },
+  resetButtonContainer: {
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  resetButton: {
+    borderColor: '#FF3B30',
   },
 });

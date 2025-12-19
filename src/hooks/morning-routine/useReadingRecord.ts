@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import type { ReadingRecord } from '@/types/morning-routine';
 import {
   getTodayReadingRecord,
   upsertReadingRecord,
+  deleteTodayReadingRecord,
 } from '@/db/morningRoutineRepository';
+
+import type { ReadingRecord } from '@/types/morning-routine';
 
 function getTodayDateString(): string {
   const today = new Date();
@@ -15,10 +17,7 @@ function getCurrentTimeISO(): string {
   return new Date().toISOString();
 }
 
-function calculateDurationMinutes(
-  startTime: string,
-  endTime: string
-): number {
+function calculateDurationMinutes(startTime: string, endTime: string): number {
   const start = new Date(startTime);
   const end = new Date(endTime);
   return Math.floor((end.getTime() - start.getTime()) / (1000 * 60));
@@ -119,6 +118,23 @@ export function useReadingRecord() {
     [todayRecord, loadTodayRecord]
   );
 
+  // 오늘 기록 초기화
+  const resetTodayRecord = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const date = getTodayDateString();
+      const success = await deleteTodayReadingRecord(date);
+      if (success) {
+        await loadTodayRecord();
+      }
+    } catch (error) {
+      console.error('독서 기록 초기화 실패:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [loadTodayRecord]);
+
   useEffect(() => {
     loadTodayRecord();
   }, [loadTodayRecord]);
@@ -130,6 +146,6 @@ export function useReadingRecord() {
     completeReading,
     isReading,
     refresh: loadTodayRecord,
+    resetTodayRecord,
   };
 }
-

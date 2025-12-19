@@ -350,6 +350,54 @@ export async function getTodayPushupRecord(
 }
 
 /**
+ * 오늘 독서 기록 삭제
+ */
+export async function deleteTodayReadingRecord(date: string): Promise<boolean> {
+  const db = await getDatabase();
+  if (!db) return false;
+
+  try {
+    await db.runAsync(`DELETE FROM reading_records WHERE date = ?`, [date]);
+    return true;
+  } catch (error) {
+    console.error('독서 기록 삭제 실패:', error);
+    return false;
+  }
+}
+
+/**
+ * 오늘 계단 기록 삭제
+ */
+export async function deleteTodayStairsRecord(date: string): Promise<boolean> {
+  const db = await getDatabase();
+  if (!db) return false;
+
+  try {
+    await db.runAsync(`DELETE FROM stairs_records WHERE date = ?`, [date]);
+    return true;
+  } catch (error) {
+    console.error('계단 기록 삭제 실패:', error);
+    return false;
+  }
+}
+
+/**
+ * 오늘 푸쉬업 기록 삭제
+ */
+export async function deleteTodayPushupRecord(date: string): Promise<boolean> {
+  const db = await getDatabase();
+  if (!db) return false;
+
+  try {
+    await db.runAsync(`DELETE FROM pushup_records WHERE date = ?`, [date]);
+    return true;
+  } catch (error) {
+    console.error('푸쉬업 기록 삭제 실패:', error);
+    return false;
+  }
+}
+
+/**
  * 푸쉬업 기록 저장/수정
  */
 export async function upsertPushupRecord(
