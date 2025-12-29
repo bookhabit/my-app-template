@@ -10,8 +10,9 @@ export default function FormLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="react-hook-form-zod" />
       <Stack.Screen name="formik-yup" />
-      <Stack.Screen name="react-final-form" />
+      <Stack.Screen name="vanilla-react" />
+      <Stack.Screen name="yup" />
+      <Stack.Screen name="zod" />
     </Stack>
   );
 }
-

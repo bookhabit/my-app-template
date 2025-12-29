@@ -33,11 +33,25 @@ const libraries: Library[] = [
     emoji: '📋',
   },
   {
-    id: 'react-final-form',
-    title: 'React Final Form',
-    route: '/(app)/library-study/form/react-final-form',
+    id: 'vanilla-react',
+    title: 'Vanilla React',
+    route: '/(app)/library-study/form/vanilla-react',
+    icon: 'code',
+    emoji: '👨‍💻',
+  },
+  {
+    id: 'yup',
+    title: 'Yup',
+    route: '/(app)/library-study/form/yup',
     icon: 'check-circle',
     emoji: '✅',
+  },
+  {
+    id: 'zod',
+    title: 'Zod',
+    route: '/(app)/library-study/form/zod',
+    icon: 'code',
+    emoji: '👨‍💻',
   },
 ];
 
@@ -164,4 +178,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
