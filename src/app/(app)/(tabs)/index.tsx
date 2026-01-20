@@ -82,6 +82,11 @@ export default function HomeScreen() {
               route: '/(app)/morning-routine',
               color: theme.accentBlue,
             },
+            {
+              title: '펫시터 요구사항',
+              route: '/(app)/petsitter',
+              color: '#8B5CF6',
+            },
           ]}
         />
         <CustomButton
