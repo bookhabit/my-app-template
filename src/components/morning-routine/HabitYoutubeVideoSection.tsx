@@ -1,4 +1,4 @@
-import React, { useState, LayoutRectangle } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { PLAYER_STATES } from 'react-native-youtube-iframe';
 
@@ -28,7 +28,7 @@ export default function HabitYoutubeVideoSection({
     PLAYER_STATES.UNSTARTED
   );
   const [isPlayerReady, setIsPlayerReady] = useState(false);
-  const [videoLayout, setVideoLayout] = useState<LayoutRectangle>({
+  const [videoLayout, setVideoLayout] = useState<any>({
     x: 0,
     y: 0,
     width: 0,

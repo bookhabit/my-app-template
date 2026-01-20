@@ -15,6 +15,7 @@ import { useMorningRoutineGoals } from '@/hooks/morning-routine/useMorningRoutin
 import { useStairsRecord } from '@/hooks/morning-routine/useStairsRecord';
 
 export default function StairsScreen() {
+  console.log('계단 스크린');
   const router = useRouter();
   const { theme } = useTheme();
   const { getCurrentWeekStairsTarget } = useMorningRoutineGoals();
@@ -102,7 +103,7 @@ export default function StairsScreen() {
         </View>
 
         {/* 유튜브 영상 섹션 */}
-        <HabitYoutubeVideoSection habitType="stairs" />
+        {/* <HabitYoutubeVideoSection habitType="stairs" /> */}
 
         {/* 계단 운동 시작/완료 섹션 */}
         <View

@@ -45,16 +45,18 @@ class AOSPedometerModule(reactContext: ReactApplicationContext) :
         // StepCounterManager 콜백 추가
         stepCounterManager?.addCallback(object : StepCounterManager.StepCounterCallback {
             override fun onStepsUpdated(stepData: StepCounterManager.StepData) {
-                // ✅ 센서 기반: 오늘 걸음수는 항상 실시간 계산
-                val totalSteps = stepData.getTodaySteps()
-                Log.d("AOSPedometer", "🔄 콜백 받음 - todaySteps: $totalSteps (센서 기반)")
-                
-                // React Native로 이벤트 전송
-                sendEvent("StepUpdate", mapOf(
-                    "totalSteps" to totalSteps.toInt()
-                ))
-                
-                Log.d("AOSPedometer", "📡 React Native 이벤트 전송 완료: $totalSteps")
+                // ✅ DB 기준: 오늘 걸음수는 DB 기준으로 실시간 계산
+                moduleScope.launch {
+                    val totalSteps = stepCounterManager?.getDisplaySteps() ?: 0L
+                    Log.d("AOSPedometer", "🔄 콜백 받음 - todaySteps: $totalSteps (DB 기준)")
+                    
+                    // React Native로 이벤트 전송
+                    sendEvent("StepUpdate", mapOf(
+                        "totalSteps" to totalSteps.toInt()
+                    ))
+                    
+                    Log.d("AOSPedometer", "📡 React Native 이벤트 전송 완료: $totalSteps")
+                }
             }
             
             override fun onStepsSaved(totalSteps: Long) {
@@ -276,11 +278,11 @@ class AOSPedometerModule(reactContext: ReactApplicationContext) :
     fun startStepCounterService(promise: Promise) {
         try {
             Log.d("AOSPedometer", "🚀 Foreground Service 시작")
-            PedometerService.startService(reactApplicationContext)
+            val success = PedometerService.startService(reactApplicationContext)
             
             val resultMap = Arguments.createMap()
-            resultMap.putBoolean("success", true)
-            resultMap.putString("message", "Foreground Service 시작됨")
+            resultMap.putBoolean("success", success)
+            resultMap.putString("message", if (success) "Foreground Service 시작됨" else "Foreground Service 시작 실패")
             promise.resolve(resultMap)
         } catch (e: Exception) {
             Log.e("AOSPedometer", "❌ Foreground Service 시작 실패", e)
@@ -316,25 +318,33 @@ class AOSPedometerModule(reactContext: ReactApplicationContext) :
     }
     
     
-    // 서비스 상태 확인 - 센서 기반
+    // 서비스 상태 확인 - DB 기준
     @ReactMethod
     fun getServiceStatus(promise: Promise) {
         try {
-            val totalSteps = stepCounterManager?.getDisplaySteps() ?: 0L
-            
-            // PedometerService의 static 메서드로 상태 확인
-            val isServiceRunning = PedometerService.isRunning()
-            
-            val resultMap = Arguments.createMap()
-            resultMap.putBoolean("success", true)
-            resultMap.putInt("totalSteps", totalSteps.toInt())
-            resultMap.putBoolean("isServiceRunning", isServiceRunning)
-            resultMap.putString("serviceName", "PedometerService")
-            
-            Log.d("AOSPedometer", "📊 서비스 상태: $isServiceRunning, 걸음수: $totalSteps (센서 기반)")
-            promise.resolve(resultMap)
+            moduleScope.launch {
+                try {
+                    val totalSteps = stepCounterManager?.getDisplaySteps() ?: 0L
+                    
+                    // PedometerService의 static 메서드로 상태 확인
+                    val isServiceRunning = PedometerService.isRunning()
+                    
+                    val resultMap = Arguments.createMap()
+                    resultMap.putBoolean("success", true)
+                    resultMap.putInt("totalSteps", totalSteps.toInt())
+                    resultMap.putInt("todaySteps", totalSteps.toInt()) // DB 기준이므로 totalSteps와 동일
+                    resultMap.putBoolean("isServiceRunning", isServiceRunning)
+                    resultMap.putString("serviceName", "PedometerService")
+                    
+                    Log.d("AOSPedometer", "📊 서비스 상태: $isServiceRunning, 걸음수: $totalSteps (DB 기준)")
+                    promise.resolve(resultMap)
+                } catch (e: Exception) {
+                    Log.e("AOSPedometer", "❌ 서비스 상태 확인 실패", e)
+                    promise.reject("STATUS_ERROR", e.message, e)
+                }
+            }
         } catch (e: Exception) {
-            Log.e("AOSPedometer", "❌ 서비스 상태 확인 실패", e)
+            Log.e("AOSPedometer", "❌ 서비스 상태 확인 실패 (외부)", e)
             promise.reject("STATUS_ERROR", e.message, e)
         }
     }

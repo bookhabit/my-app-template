@@ -2,7 +2,6 @@ package com.hyunjin_l.monymony.database.repository
 
 import android.content.Context
 import android.util.Log
-import com.hyunjin_l.monymony.pedometer.PedometerLogger
 import com.hyunjin_l.monymony.database.local.DailyStepsDao
 import com.hyunjin_l.monymony.database.local.DailyStepsEntity
 import com.hyunjin_l.monymony.database.local.StepCounterDatabase
@@ -217,9 +216,6 @@ class StepCounterRepository(context: Context) {
             // 어제 최종 걸음수 저장
             saveFinalStepsForDate(yesterday, yesterdaySteps)
             Log.d("StepRepository", "💾💾 어제($yesterday) 최종 걸음수 DB 저장 완료: $yesterdaySteps 걸음")
-            
-            // 로거에 최종 저장 기록
-            PedometerLogger.logFinalSave(yesterday, yesterdaySteps)
         } else {
             Log.d("StepRepository", "⏭️ 어제 데이터 저장 스킵 (걸음수=$yesterdaySteps, 날짜=$yesterday)")
         }
