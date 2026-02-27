@@ -99,6 +99,7 @@ class StepCounterRepository(context: Context) {
                 dailyStepsDao.updateStepsAndSensorValue(date, existingData.todaySteps, currentSensorSteps)
                 Log.d("StepRepository", "💾 센서값만 업데이트 (날짜=$date): $currentSensorSteps")
             }
+            Log.d("StepRepository", "💾 걸음수 DB 업데이트 (날짜=$date): $todaySteps (센서: $currentSensorSteps)")
         } else {
             val newData = DailyStepsEntity(
                 date = date,

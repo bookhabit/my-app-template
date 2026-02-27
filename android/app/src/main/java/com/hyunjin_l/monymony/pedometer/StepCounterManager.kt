@@ -37,8 +37,20 @@ class StepCounterManager private constructor(
     
     // 걸음수 측정 상태 (메모리 - 현재 센서값만 임시 저장)
     data class StepData(
-        var currentSensorValue: Long = 0L   // 현재 센서 값 (임시 저장용)
-    )
+        var currentSensorValue: Long = 0L,   // 현재 센서 값
+        var baselineSteps: Long = -1L,       // 오늘의 기준점 (오늘 첫 센서값)
+        var stepOffset: Long = 0L            // 재부팅 전 누적 걸음수 오프셋
+    ) {
+        // 오늘 걸음수는 항상 센서 기반으로 실시간 계산 (재부팅 오프셋 포함)
+        fun getTodaySteps(): Long {
+            return if (baselineSteps >= 0 && currentSensorValue >= baselineSteps) {
+                Log.d("StepData", "오늘 걸음수 getTodaySteps 계산: currentSensorValue=$currentSensorValue, baselineSteps=$baselineSteps, stepOffset=$stepOffset")
+                stepOffset + (currentSensorValue - baselineSteps)
+            } else {
+                stepOffset
+            }
+        }
+    }
     
     private val stepData = StepData()
     
@@ -81,7 +93,6 @@ class StepCounterManager private constructor(
     suspend fun initialize() {
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         Log.d("StepCounterManager", "🔧🔧 StepCounterManager 초기화 시작 (오늘=$today) 🔧🔧")
-        Log.d("StepCounterManager", "📊 [초기상태] currentSensorValue=${stepData.currentSensorValue} (인스턴스 - 메모리)")
         
         // ACTIVITY_RECOGNITION 권한 체크
         if (!hasActivityRecognitionPermission()) {
@@ -104,12 +115,20 @@ class StepCounterManager private constructor(
             // 메모리 초기화 (DB 기준이므로 메모리는 현재 센서값만 저장)
             Log.d("StepCounterManager", "🔄 [변경] currentSensorValue: ${stepData.currentSensorValue} → 0L (날짜 변경 초기화)")
             stepData.currentSensorValue = 0L
-            Log.d("StepCounterManager", "✅✅ 메모리 초기화 완료! (새로운 날 시작, DB 기준으로 동작)")
-            Log.d("StepCounterManager", "📊 [현재값] currentSensorValue=${stepData.currentSensorValue}")
-            Log.d("StepCounterManager", "🎯 새로운 날($today) 걸음수 측정 시작 준비 (DB 기준)")
+            stepData.baselineSteps = -1L
+            Log.d("StepCounterManager", "✅✅ 메모리 초기화 완료! baselineSteps=-1 (새로운 날 시작)")
+            Log.d("StepCounterManager", "🎯 새로운 날($today) 걸음수 측정 시작 준비")
         } else {
             Log.d("StepCounterManager", "📅 같은 날 계속 ($today)")
-            Log.d("StepCounterManager", "📊 DB 기준으로 동작 (메모리는 현재 센서값만 저장)")
+
+            // 같은 날이면 DB에서 baselineSteps + todaySteps 로드
+            // todaySteps → stepOffset으로 복원 (앱 업데이트/재시작 후에도 걸음수 유지)
+            val sensorBaseline = repository.getTodayBaselineSteps()
+            if (sensorBaseline != null) {
+                stepData.baselineSteps = sensorBaseline
+                stepData.stepOffset = repository.getTodaySteps()
+                Log.d("StepCounterManager", "📊 DB에서 로드: baselineSteps=${stepData.baselineSteps}, stepOffset=${stepData.stepOffset} (날짜=$today)")
+            }
         }
         
         // 센서 등록
@@ -184,14 +203,24 @@ class StepCounterManager private constructor(
                 Log.d("StepCounterManager", "   → 메모리 부족: ${if (memoryInfo.lowMemory) "⚠️ 예" else "✅ 아니오"}")
                 Log.d("StepCounterManager", "   → 기준점: ${formatMemorySize(memoryInfo.threshold)}")
                 
-                // ✅ 현재 걸음수 상태 로그 (DB 기준)
-                Log.d("StepCounterManager", "📊 현재 상태 (걸음수):")
-                coroutineScope.launch {
-                    val displaySteps = getDisplaySteps()
-                    Log.d("StepCounterManager", "   → todaySteps: $displaySteps (DB 기준 계산)")
-                    Log.d("StepCounterManager", "   → currentSensorValue: ${stepData.currentSensorValue}")
-                }
+                // ✅ 현재 걸음수 메모리 상태 로그 (센서 기반)
+                Log.d("StepCounterManager", "📊 현재 메모리 상태 (걸음수):")
+                Log.d("StepCounterManager", "   → todaySteps: ${stepData.getTodaySteps()} (센서 기반 계산)")
+                Log.d("StepCounterManager", "   → currentSensorValue: ${stepData.currentSensorValue}")
+                Log.d("StepCounterManager", "   → baselineSteps: ${stepData.baselineSteps}")
                 
+                // 주기적 걸음수 DB 저장 (재부팅 복원을 위해 최신 걸음수 유지)
+                if (stepData.baselineSteps >= 0) {
+                    Log.d("StepCounterManager", "stepData.currentSensorValue: ${stepData.currentSensorValue}")
+                    Log.d("StepCounterManager", "stepData.baselineSteps: $stepData.baselineSteps")
+                    Log.d("StepCounterManager", "stepData.currentSensorValue - stepData.baselineSteps: ${stepData.currentSensorValue - stepData.baselineSteps}")
+                    val currentSteps = stepData.getTodaySteps()
+                    val currentSensorVal = stepData.currentSensorValue
+                    
+                    repository.saveTodaySteps(currentSteps, currentSensorVal)
+                    Log.d("StepCounterManager", "⏰ 주기적 걸음수 DB 저장: $currentSteps , $currentSensorVal")
+                }
+
                 // 날짜가 변경되었는지 확인
                 if (repository.isNewDay()) {
                     Log.d("StepCounterManager", "🌅 주기적 체크에서 날짜 변경 감지!")
@@ -320,23 +349,16 @@ class StepCounterManager private constructor(
                 if (currentSensorSteps < dbBaseline) {
                     Log.d("StepCounterManager", "🔄 재부팅 감지: $currentSensorSteps < $dbBaseline (DB baseline)")
                     handleRebootDetection(currentSensorSteps)
-                    return@launch
                 }
-                
-                // ✅ DB 기준 실시간 걸음수 계산 (항상 업데이트)
-                val displaySteps = getDisplaySteps()
-                Log.d("StepCounterManager", "🔢 DB 기준 계산: DB todaySteps + (센서 $currentSensorSteps - DB baseline $dbBaseline) = $displaySteps")
-                
-                // ✅ 걸음수가 변경되었으면 즉시 DB에 저장 (하드웨어 센서 데이터 유지)
-                if (displaySteps != lastSavedDisplaySteps && displaySteps > 0) {
-                    repository.saveTodaySteps(displaySteps, currentSensorSteps)
-                    lastSavedDisplaySteps = displaySteps
-                    Log.d("StepCounterManager", "💾 즉시 저장: todaySteps=$displaySteps, sensorSteps=$currentSensorSteps (하드웨어 센서 데이터 유지)")
-                }
-                
-                // 콜백으로 업데이트 알림
-                callbacks.forEach { it.onStepsUpdated(stepData) }
+                return
             }
+            
+            // ✅ 센서 기반 실시간 걸음수 계산 (항상 업데이트)
+            Log.d("StepCounterManager", "🔢 실시간 계산: $currentSensorSteps - ${stepData.baselineSteps} = $todaySteps")
+            
+            // 콜백으로 업데이트 알림 (항상 호출 - 센서 기반이므로)
+            callbacks.forEach { it.onStepsUpdated(stepData) }
+            
         }
     }
     
@@ -351,7 +373,7 @@ class StepCounterManager private constructor(
         Log.d("StepCounterManager", "🌅🌅 날짜 변경 처리 시작 (오늘=$today) 🌅🌅")
         Log.d("StepCounterManager", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         
-        Log.d("StepCounterManager", "📊 [1/4] 어제 걸음수 (DB 기준): $yesterdaySteps 걸음")
+        Log.d("StepCounterManager", "📊 [1/4] 어제 걸음수 (센서 기반): $yesterdaySteps 걸음")
         
         // 1. 어제 데이터 최종 저장 (날짜 변경 시에만 저장)
         Log.d("StepCounterManager", "💾 [2/4] 어제 데이터 DB 저장 중...")
@@ -361,9 +383,9 @@ class StepCounterManager private constructor(
         Log.d("StepCounterManager", "🧹 [3/4] 메모리 초기화 중...")
         Log.d("StepCounterManager", "🔄 [변경] currentSensorValue: ${stepData.currentSensorValue} → $currentSensorSteps (날짜 변경)")
         stepData.currentSensorValue = currentSensorSteps
-        lastSavedDisplaySteps = -1L  // 날짜 변경 시 저장된 걸음수 초기화
-        Log.d("StepCounterManager", "✅ 메모리 초기화 완료 (DB 기준으로 동작)")
-        Log.d("StepCounterManager", "📊 [현재값] currentSensorValue=${stepData.currentSensorValue}")
+        stepData.baselineSteps = currentSensorSteps  // 오늘의 기준점 설정
+        stepData.stepOffset = 0L                     // 새날 시작 시 오프셋 리셋
+        Log.d("StepCounterManager", "✅ 메모리 초기화 완료: baselineSteps=$currentSensorSteps (오늘 시작점)")
         
         // 3. DB에 오늘 데이터 생성 (baseline만 저장)
         Log.d("StepCounterManager", "🆕 [4/4] 오늘($today) DB 데이터 생성 중...")
@@ -413,37 +435,21 @@ class StepCounterManager private constructor(
     private suspend fun handleRebootDetection(currentSensorSteps: Long) {
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         Log.d("StepCounterManager", "🔄🔄 재부팅 감지! (날짜=$today, 센서값=$currentSensorSteps)")
-        
-        // DB에 baseline 업데이트 및 오늘 걸음수 계산 (재부팅 시 todaySteps 유지)
-        val todaySteps = repository.initializeTodayData(currentSensorSteps)
-        
-        // DB에서 업데이트된 sensorSteps (baseline) 가져오기
-        val dbBaseline = repository.getTodayBaselineSteps()
-        
-        // 메모리에 현재 센서값만 저장 (DB 기준으로 동작)
-        Log.d("StepCounterManager", "🔄 [변경] currentSensorValue: ${stepData.currentSensorValue} → $currentSensorSteps (재부팅 감지)")
+
+        // DB에서 재부팅 전 걸음수 복원 (initializeTodayData가 existingData.todaySteps 반환)
+        val preRebootSteps = repository.initializeTodayData(currentSensorSteps)
+
+        // 새 baseline = 재부팅 후 센서 시작점, offset = 재부팅 전 누적 걸음수
+        stepData.baselineSteps = currentSensorSteps
         stepData.currentSensorValue = currentSensorSteps
-        Log.d("StepCounterManager", "📊 [현재값] currentSensorValue=${stepData.currentSensorValue}")
-        
-        if (dbBaseline != null) {
-            // DB에 baseline이 있음 → 재부팅으로 센서가 리셋되었지만 DB todaySteps는 유지됨
-            Log.d("StepCounterManager", "🔄 재부팅 확인: 센서값($currentSensorSteps) < DB baseline($dbBaseline)")
-            Log.d("StepCounterManager", "   → DB todaySteps=$todaySteps (기존 걸음수 유지, DB에 저장됨)")
-        } else {
-            // DB에 baseline이 없음 → 새로운 시작
-            Log.d("StepCounterManager", "🆕 DB에 baseline 없음 - 재부팅 후 새로운 시작")
-            Log.d("StepCounterManager", "   → DB todaySteps=$todaySteps")
-        }
-        
-        val displaySteps = getDisplaySteps()
-        Log.d("StepCounterManager", "   → DB 기준 계산 todaySteps=$displaySteps (기존 $todaySteps + 새 걸음수)")
-        
-        // 재부팅 후 저장된 걸음수 업데이트
-        lastSavedDisplaySteps = displaySteps
-        
-        Log.d("StepCounterManager", "✅ 재부팅 후 초기화 완료 (날짜=$today, DB 기준)")
+        stepData.stepOffset = preRebootSteps
+
+        Log.d("StepCounterManager", "✅ 재부팅 후 초기화 완료 (날짜=$today)")
+        Log.d("StepCounterManager", "   → preRebootSteps=$preRebootSteps (복원된 걸음수)")
+        Log.d("StepCounterManager", "   → baselineSteps=$currentSensorSteps (새 시작점)")
+        Log.d("StepCounterManager", "   → todaySteps=${stepData.getTodaySteps()} (오프셋 포함)")
         Log.d("StepCounterManager", "🎯 오늘($today) 걸음수 측정 재시작!")
-        
+
         callbacks.forEach { it.onRebootDetected() }
         callbacks.forEach { it.onStepsUpdated(stepData) }
     }
