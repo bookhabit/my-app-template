@@ -45,6 +45,12 @@ export default {
           },
         },
       ],
+      [
+        'expo-local-authentication',
+        {
+          faceIDPermission: 'Allow 테스트앱 to use Face ID.',
+        },
+      ],
       'expo-font',
     ],
     experiments: {

@@ -80,6 +80,14 @@ export default function DesignScreen() {
           </Pressable>
         </View>
 
+        <Pressable
+          style={[styles.themeButton, { backgroundColor: theme.success }]}
+          onPress={() => router.push('/(app)/(face)')}
+        >
+          <TextBox variant="button2" color="#fff">
+            페이스 인증
+          </TextBox>
+        </Pressable>
         {/* Color Palette */}
         <View style={[styles.section, { backgroundColor: theme.surface }]}>
           <TextBox
