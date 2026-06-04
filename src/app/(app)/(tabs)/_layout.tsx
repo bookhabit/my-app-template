@@ -49,6 +49,15 @@ export default function TabsLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="games"
+        options={{
+          title: '게임',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="sports-esports" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

@@ -56,11 +56,19 @@ export default function AppLayout() {
           name="(details)"
           options={{
             headerShown: false,
-            // iOS 스와이프로 뒤로가기
             gestureEnabled: true,
-            // 제스처 영역 확대 (화면 왼쪽 전체)
             fullScreenGestureEnabled: true,
             presentation: 'card',
+          }}
+        />
+        <Stack.Screen
+          name="(games)"
+          options={{
+            headerShown: false,
+            gestureEnabled: true,
+            fullScreenGestureEnabled: true,
+            animation: 'slide_from_bottom',
+            presentation: 'fullScreenModal',
           }}
         />
       </Stack>
